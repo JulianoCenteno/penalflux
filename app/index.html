@@ -581,7 +581,7 @@ function vArt(n){
   </div>
   <aside class="side">
     <button class="btn ${S.studied[a.n]?'soft':'go'} block" id="bS">${S.studied[a.n]?IC.check+'Estudado':'Marcar como estudado'}</button>
-    <div class="g2" style="gap:8px;grid-template-columns:1fr 1fr"><button class="btn soft sm" id="bF">${IC.star}${S.fav[a.n]?'Salvo':'Salvar'}</button><button class="btn soft sm" id="bA">${has('audio')?IC.play:IC.lock}Ouvir</button></div>
+    <button class="btn soft sm block" id="bF">${IC.star}${S.fav[a.n]?'Salvo':'Salvar'}</button>
     <button class="btn soft sm block" id="bC">${IC.copy}Copiar resumo</button>
     ${cmp?`<a class="confuse" href="#cmp-${cmp.id}"><span class="muted xs" style="font-weight:700">Costuma confundir com</span><h3 style="margin:2px 0 4px">${cmp.a.filter(x=>x!==a.n).map(x=>'Art. '+x+', '+esc(byN[x].t.toLowerCase())).join(' e ')}</h3><span class="link">Ver a diferença</span></a>`:''}
     <div class="panel" style="padding:16px"><span class="muted xs" style="font-weight:700">Texto conferido com o Planalto</span><h3>${CHANGED[a.n]?'Última alteração em '+CHANGED[a.n].split('-').reverse().join('/'):'Redação vigente'}</h3><p class="muted xs">Texto em vigor conferido até 23/09/2026.</p></div>
@@ -589,7 +589,7 @@ function vArt(n){
   $('#bS').onclick=()=>{if(S.studied[a.n])delete S.studied[a.n];else{S.studied[a.n]=today();act();const d=doneToday();toast(d===S.goal?'Meta de hoje cumprida!':`Estudado. ${d}/${S.goal} hoje.`);}save();vArt(n);};
   $('#bF').onclick=()=>{S.fav[a.n]?delete S.fav[a.n]:S.fav[a.n]=1;save();vArt(n);};
   $('#bC').onclick=async()=>{try{await navigator.clipboard.writeText(`Art. ${a.n}, ${a.t}\n${kLbl(a)}: ${a.k}\n${a.s}${a.pena?'\nPena: '+a.pena:''}`);toast('Resumo copiado');}catch(e){toast('Não foi possível copiar neste navegador');}};
-  $('#bA').onclick=()=>{if(!has('audio'))return offer('audio');AUDIO_I=null;go('audio');return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(`Artigo ${a.n}. ${a.t}. ${kLbl(a)}: ${a.k}. ${a.s} ${a.e?'Na prática: '+a.e:''} ${a.pena?'Pena: '+a.pena:''}`);u.lang='pt-BR';speechSynthesis.speak(u);toast('Tocando o áudio do artigo');}catch(e){toast('Este navegador não reproduz áudio');}};
+  if($('#bA'))$('#bA').onclick=()=>{if(!has('audio'))return offer('audio');AUDIO_I=null;go('audio');return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(`Artigo ${a.n}. ${a.t}. ${kLbl(a)}: ${a.k}. ${a.s} ${a.e?'Na prática: '+a.e:''} ${a.pena?'Pena: '+a.pena:''}`);u.lang='pt-BR';speechSynthesis.speak(u);toast('Tocando o áudio do artigo');}catch(e){toast('Este navegador não reproduz áudio');}};
 }
 
 /* ================= 25 MAIS COBRADOS ================= */
@@ -737,12 +737,12 @@ function prodCard(id,to){const p=PRODUCTS[id],own=S.owned[id],par=p.of&&S.owned[
   return `<button class="prod" onclick="${own||par?to:`offer('${id}')`}">${cover(id)}<span class="meta"><h3>${p.name}</h3><p>${p.desc}</p><span class="foot">${st}</span></span></button>`;}
 function vStore(){
   const plan=S.owned.completo?'completo':'basico';
-  const lib=[['codigo',`361 artigos explicados`,'codigo',null],['cobrados','25 artigos mais cobrados','cobrados','completo'],['treinar','Simulado comentado de Direito Penal','simpenal','completo'],['penas','Tabela completa de penas','penas','completo'],['cf','Simulado comentado da Constituição','simcf','completo'],['mapa','Mapa mental do Código Penal','mapa','completo'],['pegadinhas','40 pegadinhas das principais bancas','pegadinhas','completo'],['comparar','Comparador de crimes','comparador','completo'],['cards','Flashcards','flashcards','completo'],['penas','Leis Penais Especiais','especiais','especiais'],['play','Resumos em áudio','audio','audio'],['chat','Tutor de dúvidas','tutor','pro'],['spark','Mudanças na lei','novidades','pro']];
+  const lib=[['codigo',`361 artigos explicados`,'codigo',null],['cobrados','25 artigos mais cobrados','cobrados','completo'],['treinar','Simulado comentado de Direito Penal','simpenal','completo'],['penas','Tabela completa de penas','penas','completo'],['cf','Simulado comentado da Constituição','simcf','completo'],['mapa','Mapa mental do Código Penal','mapa','completo'],['pegadinhas','40 pegadinhas das principais bancas','pegadinhas','completo'],['comparar','Comparador de crimes','comparador','completo'],['cards','Flashcards','flashcards','completo'],['penas','Leis Penais Especiais','especiais','especiais'],['chat','Tutor de dúvidas','tutor','pro'],['spark','Mudanças na lei','novidades','pro']];
   const dest={audio:'audio',cobrados:'cobrados',simpenal:"startQ('penal')",penas:'penas',simcf:"startQ('cf')",mapa:'mapa',pegadinhas:'pegadinhas',comparador:'comparar',flashcards:'flash',especiais:'especiais',tutor:'tutor',novidades:'novidades'};
   $('#app').innerHTML=`<h1>Meus conteúdos</h1>
   <section class="plan-hero" style="margin-top:20px"><div><span style="color:var(--gold2);font-weight:700">Seu plano</span><h2 style="font-size:30px;margin-top:2px">${PRODUCTS[plan].name}</h2><p style="color:#C3CBDD;margin-top:6px">${PRODUCTS[plan].desc}</p></div>${plan==='basico'?`<button class="btn gold" onclick="offer('completo')">Ir para o Completo por ${brl(20)} a mais</button>`:`<span class="chip gold" style="font-size:14px">Acesso vitalício</span>`}</section>
   <section class="sec"><h2 style="margin-bottom:12px">Biblioteca</h2><div class="g3">${lib.map(([icn,l,f,p])=>{const ok=!p||has(f);const d=f==='codigo'?"go('codigo')":(dest[f]&&dest[f].includes('(')?dest[f]:`go('${dest[f]}')`);return `<button class="mode" onclick="${ok?d:`offer('${p}')`}"><span class="ico" style="${ok?'':'background:var(--surface2);color:var(--ink3)'}">${ok?sm(icn,22):sm('lock',20)}</span><span class="meta"><h3 style="font-size:15px">${l}</h3><p class="muted xs" style="font-weight:600">${ok?'Abrir':'No '+PRODUCTS[p].name.replace('PenalFlux ','')}</p></span></button>`;}).join('')}</div></section>
-  <section class="sec"><h2 style="margin-bottom:12px">Turbine seus estudos</h2><div class="g2">${prodCard('audio',`go('audio')`)}${prodCard('especiais',`go('especiais')`)}</div></section>
+  <section class="sec"><h2 style="margin-bottom:12px">Turbine seus estudos</h2><div class="g2">${prodCard('especiais',`go('especiais')`)}</div></section>
   <section class="sec"><h2 style="margin-bottom:12px">Próximo nível</h2><div class="g2">${prodCard('banco',`go('treinar')`)}${S.owned.banco?'':prodCard('mini',`go('treinar')`)}${prodCard('pro',`go('tutor')`)}${S.owned.pro?'':prodCard('proanual',`go('tutor')`)}</div></section>${legal}`;
 }
 let ESEL=0;
