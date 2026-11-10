@@ -275,21 +275,6 @@ async function logout(req: Request) {
 }
 
 
-// TEMPORÁRIO: copia o conteúdo para o armazenamento privado (removido depois da carga)
-async function seed(req: Request, url: URL) {
-  const real = await setting("seed_key");
-  if (!real || !safeEqual(url.searchParams.get("key") || "", real)) return json({ error: "chave inválida" }, 401);
-  const { base, files } = await req.json();
-  const out: Record<string, string> = {};
-  for (const [src, dst, type] of files as [string, string, string][]) {
-    const r = await fetch(base + src);
-    if (!r.ok) { out[dst] = "fetch " + r.status; continue; }
-    const { error } = await db.storage.from(BUCKET).upload(dst, await r.arrayBuffer(), { contentType: type, upsert: true });
-    out[dst] = error ? error.message : "ok";
-  }
-  cache.clear();
-  return json(out);
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -300,7 +285,6 @@ Deno.serve(async (req) => {
     if (route === "/login" && req.method === "POST") return await login(req);
     if (route === "/me") return await me(req);
     if (route === "/pdf") return await pdf(req, url);
-    if (route === "/seed" && req.method === "POST") return await seed(req, url);
     if (route === "/logout" && req.method === "POST") return await logout(req);
     return json({ error: "rota não encontrada" }, 404);
   } catch (e) {
