@@ -51,8 +51,9 @@ async function hit(key: string, max: number, minutes: number) {
 // O que cada compra libera (nome do produto no Digital Hub -> chave no app)
 function productsFromTitle(t: string): string[] {
   const s = norm(t);
+  if (!/penalflux/.test(s)) return [];
   if (/leve todos|todos os materiais/.test(s)) return ["todos", "especiais", "verbos", "cpp"];
-  if (/mapa dos verbos|verbos chave|verbos-chave/.test(s)) return ["verbos"];
+  if (/mapa dos verbos/.test(s)) return ["verbos"];
   if (/processo penal/.test(s)) return ["cpp"];
   if (/leis penais especiais|leis especiais/.test(s)) return ["especiais"];
   if (/banco de questoes/.test(s)) return ["banco"];
@@ -60,6 +61,8 @@ function productsFromTitle(t: string): string[] {
   if (/resumos em audio|audio/.test(s)) return ["audio"];
   if (/completo/.test(s)) return ["completo", "basico"];
   if (/basico/.test(s)) return ["basico"];
+  // Produto principal do Completo: "PenalFlux — Código Penal pelo Método do Verbo-Chave"
+  if (/codigo penal pelo metodo/.test(s)) return ["completo", "basico"];
   return [];
 }
 function expand(list: string[]) {
@@ -119,12 +122,8 @@ function parse(payload: unknown) {
   if (status === "unknown") status = mapStatus(pick(payload, PATHS.status));
   if (status === "unknown" && event) status = mapStatus(event);
   const t = titles(payload);
-  let products = t.flatMap(productsFromTitle);
-  // Produto principal sem "Básico"/"Completo" no nome: o valor decide (a partir de R$ 30 é o Completo)
-  const isPF = t.some((x) => /penalflux/.test(norm(x)));
+  const products = [...new Set(t.flatMap(productsFromTitle))];
   const amount = Number(String(pick(payload, PATHS.amount) ?? "").replace(",", "."));
-  if (isPF && !products.includes("basico")) products.push(...(Number.isFinite(amount) && amount >= 30 ? ["completo", "basico"] : ["basico"]));
-  products = [...new Set(products)];
   const id = pick(payload, PATHS.orderId);
   return {
     orderId: id != null ? String(id) : null,
