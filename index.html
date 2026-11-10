@@ -389,7 +389,8 @@ document.querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>openCheckout(b
 document.getElementById('scrim').onclick=e=>{if(e.target.id==='scrim')close();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 /* repassa parâmetros (afiliado, UTM) para o checkout */
-(()=>{const K='pf_aff';let P=new URLSearchParams(location.search);let s={};try{s=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+(()=>{const K='pf_aff';const SLUGS={j:{afi:'021BD794',afib:'C01B86B5'}};let P=new URLSearchParams(location.search);let s={};try{s=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+const seg=location.pathname.split('/').filter(Boolean)[0];if(seg&&SLUGS[seg]&&!P.get('afi')){P.set('afi',SLUGS[seg].afi);P.set('afib',SLUGS[seg].afib);}
 if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib')||'',t:Date.now()};try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}}
 if(s.t&&Date.now()-s.t>30*864e5)s={};
 P.delete('afi');P.delete('afib');const rest=P.toString();
