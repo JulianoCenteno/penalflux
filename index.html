@@ -203,6 +203,9 @@ footer{background:#08101F;color:#6F7B98;font-size:13px;padding:30px 0;text-align
 .sticky .btn{padding:12px 18px;font-size:15px}
 @media (min-width:861px){.sticky{display:none!important}}
 </style>
+<!-- Meta Pixel -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1021288667656467');fbq('track','PageView');fbq('track','ViewContent',{content_name:'PenalFlux',currency:'BRL',value:37});</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1021288667656467&ev=PageView&noscript=1"/></noscript>
 </head>
 <body>
 <div class="bar">Atualizado com as mudanças de 2026 no Código Penal (Leis 15.397 e 15.517)</div>
@@ -390,7 +393,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib')||'',t:Date.now()};try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}}
 if(s.t&&Date.now()-s.t>30*864e5)s={};
 P.delete('afi');P.delete('afib');const rest=P.toString();
-document.querySelectorAll('a[data-ck]').forEach(a=>{const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
+document.querySelectorAll('a[data-ck]').forEach(a=>{a.addEventListener('click',()=>{try{fbq('track','InitiateCheckout',{currency:'BRL',value:a.dataset.ck==='basico'?17:37,content_name:a.dataset.ck==='basico'?'PenalFlux Básico':'PenalFlux Completo'})}catch(e){}});const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
 /* barra fixa no celular */
 const st=document.getElementById('sticky'),offer=document.getElementById('oferta');
 addEventListener('scroll',()=>{const r=offer.getBoundingClientRect();st.classList.toggle('show',scrollY>700&&!(r.top<innerHeight&&r.bottom>0));},{passive:true});
