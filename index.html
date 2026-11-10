@@ -386,7 +386,11 @@ document.querySelectorAll('[data-plan]').forEach(b=>b.onclick=()=>openCheckout(b
 document.getElementById('scrim').onclick=e=>{if(e.target.id==='scrim')close();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
 /* repassa parâmetros (afiliado, UTM) para o checkout */
-(()=>{const q=location.search;if(!q)return;document.querySelectorAll('a[data-ck]').forEach(a=>{a.href+=(a.href.includes('?')?'&':'?')+q.slice(1);});})();
+(()=>{const K='pf_aff';let P=new URLSearchParams(location.search);let s={};try{s=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}
+if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib')||'',t:Date.now()};try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}}
+if(s.t&&Date.now()-s.t>30*864e5)s={};
+P.delete('afi');P.delete('afib');const rest=P.toString();
+document.querySelectorAll('a[data-ck]').forEach(a=>{const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
 /* barra fixa no celular */
 const st=document.getElementById('sticky'),offer=document.getElementById('oferta');
 addEventListener('scroll',()=>{const r=offer.getBoundingClientRect();st.classList.toggle('show',scrollY>700&&!(r.top<innerHeight&&r.bottom>0));},{passive:true});
