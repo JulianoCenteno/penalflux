@@ -2,12 +2,31 @@
   "cleanUrls": true,
   "trailingSlash": true,
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://ltzynrrjmrwqnrcjulcj.supabase.co/functions/v1/pf/:path*" }
+    {
+      "source": "/api/(.*)",
+      "destination": "https://ltzynrrjmrwqnrcjulcj.supabase.co/functions/v1/pf/$1"
+    }
   ],
   "redirects": [
-    { "source": "/app/bumps/:file*", "destination": "/app/#conteudos", "permanent": false }
+    {
+      "source": "/app/bumps/:file*",
+      "destination": "/app/#conteudos",
+      "permanent": false
+    }
   ],
   "headers": [
-    { "source": "/app/(.*)", "headers": [ { "key": "Cache-Control", "value": "no-cache" }, { "key": "X-Robots-Tag", "value": "noindex" } ] }
+    {
+      "source": "/app/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex"
+        }
+      ]
+    }
   ]
 }
