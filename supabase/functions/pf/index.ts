@@ -65,6 +65,27 @@ function productsFromTitle(t: string): string[] {
   if (/codigo penal pelo metodo/.test(s)) return ["completo", "basico"];
   return [];
 }
+// Bumps chegam com o texto da oferta ("Sim, quero LEVAR TODOS os 3 acima"), sem "PenalFlux" no nome.
+// Reconhece pelo ID do produto e, se for um bump novo, pelo texto da oferta.
+const BUMP_IDS: Record<string, string[]> = {
+  "0264b5c6-86e5-4b55-a45f-b01834ce1162": ["todos", "especiais", "verbos", "cpp"],
+  "684cc71d-f3e3-4d5a-8bc5-33ceb2e8248d": ["especiais"],
+};
+function bumpProducts(it: unknown): string[] {
+  const id = String(pick(it, ["product_id", "product.id", "id"]) ?? "");
+  if (BUMP_IDS[id]) return BUMP_IDS[id];
+  const name = norm(pick(it, ["name", "title", "product.name", "product_name"]));
+  const desc = norm(pick(it, ["desc", "description"]));
+  for (const s of [name, desc]) {
+    if (!s) continue;
+    if (/leve todos|levar todos|todos os 3|todos os materiais/.test(s)) return ["todos", "especiais", "verbos", "cpp"];
+    if (/leis penais especiais|leis especiais/.test(s)) return ["especiais"];
+    if (/mapa dos verbos/.test(s)) return ["verbos"];
+    if (/processo penal/.test(s)) return ["cpp"];
+    if (/resumos em audio|audio/.test(s)) return ["audio"];
+  }
+  return [];
+}
 function expand(list: string[]) {
   const o = new Set(list);
   if (o.has("completo")) o.add("basico");
@@ -122,7 +143,15 @@ function parse(payload: unknown) {
   if (status === "unknown") status = mapStatus(pick(payload, PATHS.status));
   if (status === "unknown" && event) status = mapStatus(event);
   const t = titles(payload);
-  const products = [...new Set(t.flatMap(productsFromTitle))];
+  const main = t.flatMap(productsFromTitle);
+  const bumps: string[] = [];
+  if (main.length) {
+    for (const l of ["order.bumps", "bumps", "order_bumps", "data.order_bumps"]) {
+      const arr = getPath(payload, l);
+      if (Array.isArray(arr)) for (const it of arr) bumps.push(...bumpProducts(it));
+    }
+  }
+  const products = [...new Set([...main, ...bumps])];
   const amount = Number(String(pick(payload, PATHS.amount) ?? "").replace(",", "."));
   const id = pick(payload, PATHS.orderId);
   return {
