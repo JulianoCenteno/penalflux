@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desafio do Verbo-Chave · PenalFlux</title>
+<meta name="description" content="7 casos reais de Direito Penal. Descubra o crime pelo verbo, ganhe pontos e veja sua patente.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/j/qz/q.css?v=1">
+<style>
+body{background:var(--navy)}
+.qtop{border-bottom:1px solid rgba(214,180,103,.18)}
+.stage{color:#fff}
+.hud{display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:16px}
+.chip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:99px;padding:7px 13px;font-weight:800;font-size:14px;display:flex;gap:6px;align-items:center;white-space:nowrap}
+.chip.hot{background:rgba(214,180,103,.16);border-color:rgba(214,180,103,.5);color:var(--gold2)}
+.timer{height:6px;border-radius:99px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:18px}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,#7BD3A8,var(--gold2));width:100%;transition:width 1s linear}
+.timer.low i{background:#E06A7A}
+.case{background:#fff;color:var(--ink);border-radius:22px;padding:22px}
+.case .lvl{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.case p.sc{font-size:18px;line-height:1.5;margin-top:8px}
+.case .opts{margin-top:18px}
+.exp{margin-top:14px;border-radius:16px;padding:16px;font-size:15.5px;background:var(--bg)}
+.exp .vb{display:inline-block;font-family:var(--serif);font-size:24px;background:linear-gradient(100deg,transparent 2%,var(--goldhl) 4%,var(--goldhl) 96%,transparent 98%) no-repeat 0 85%/100% 45%;margin:4px 0}
+.pts{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%);font-family:var(--serif);font-size:54px;color:var(--gold2);pointer-events:none;animation:pop 1s ease forwards;text-shadow:0 6px 30px rgba(0,0,0,.4);z-index:30}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.08)}100%{opacity:0;transform:translate(-50%,-110%) scale(1)}}
+.conf{position:fixed;top:40%;left:50%;font-size:22px;pointer-events:none;z-index:29;animation:fly 1s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--x),var(--y)) rotate(var(--r));opacity:0}}
+.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+.badge-big{width:150px;height:150px;margin:0 auto;border-radius:50%;background:radial-gradient(circle at 35% 30%,#EBD08E,#B8913A 60%,#8E6C24);display:flex;align-items:center;justify-content:center;font-size:64px;box-shadow:0 0 0 8px rgba(214,180,103,.18),0 20px 50px -10px rgba(184,145,58,.6);animation:in .6s ease both}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px}
+.stats div{background:rgba(255,255,255,.07);border-radius:16px;padding:14px 6px;text-align:center}
+.stats b{display:block;font-family:var(--serif);font-weight:400;font-size:30px;color:var(--gold2)}
+.stats span{font-size:12.5px;color:#AEB8CF;font-weight:700}
+.dots{display:flex;gap:6px;justify-content:center;margin-top:16px}
+.dots i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.15)}
+.dots i.ok{background:#7BD3A8}.dots i.no{background:#E06A7A}
+.rev{background:#fff;color:var(--ink);border-radius:20px;padding:18px;margin-top:18px}
+.rev li{margin:6px 0 0 18px;font-size:15px}
+.light{background:var(--bg);color:var(--ink);border-radius:24px;padding:22px 16px;margin:24px -6px 0}
+footer{color:#5E6B88}
+</style>
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1021288667656467');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1021288667656467&ev=PageView&noscript=1"/></noscript>
+<script src="https://tracker.appdigitalhub.com.br/tracker.js" async data-endpoint="https://tracker.appdigitalhub.com.br" data-checkout="appdigitalhub.com.br/c/"></script>
+</head>
+<body>
+<header class="qtop"><div class="in">
+  <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg>Penal<span>Flux</span></div>
+  <div class="prog"><small id="pt">Desafio do Verbo-Chave</small><div class="bar"><i id="pb"></i></div></div>
+</div></header>
+<main class="stage" id="stage"></main>
+<footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
+<div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
+<script src="/j/qz/oferta.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var TIME = 25;
+  var C = [
+    { lvl: 'Nível 1 · Crimes contra o patrimônio', s: 'No ponto de ônibus, alguém tira o celular do bolso de uma pessoa distraída, sem que ela perceba.', o: [['Furto', 'art. 155'], ['Roubo', 'art. 157'], ['Estelionato', 'art. 171']], a: 0, vb: 'subtrair', e: '<b>Subtrair</b> coisa alheia, sem violência nem ameaça, é furto. Se tivesse empurrado ou ameaçado a vítima, seria roubo.' },
+    { lvl: 'Nível 1 · Crimes contra o patrimônio', s: 'Um homem mostra uma faca e manda a vítima entregar o celular. Ela entrega com medo.', o: [['Furto', 'art. 155'], ['Roubo', 'art. 157'], ['Extorsão', 'art. 158']], a: 1, vb: 'subtrair mediante grave ameaça', e: 'É o mesmo <b>subtrair</b> do furto, mas com <b>grave ameaça</b> ou violência. Essa expressão transforma o furto em roubo e muda a pena.' },
+    { lvl: 'Nível 1 · Crimes contra o patrimônio', s: 'Um falso vendedor anuncia uma TV na internet, convence a vítima de que o produto existe e ela faz o Pix. A TV nunca chega.', o: [['Furto mediante fraude', 'art. 155, § 4º'], ['Estelionato', 'art. 171'], ['Extorsão', 'art. 158']], a: 1, vb: 'obter vantagem induzindo em erro', e: 'No estelionato a vítima é <b>induzida em erro</b> e entrega o dinheiro por vontade própria. No furto mediante fraude, a fraude só distrai a vítima para o agente <b>subtrair</b>.' },
+    { lvl: 'Nível 2 · Crimes contra a administração pública', s: 'O fiscal diz ao dono do bar: “ou você me paga R$ 5 mil, ou eu interdito o seu estabelecimento”.', o: [['Concussão', 'art. 316'], ['Corrupção passiva', 'art. 317'], ['Corrupção ativa', 'art. 333']], a: 0, vb: 'exigir', e: 'Servidor que <b>exige</b> vantagem em razão da função comete concussão. Se ele só tivesse <b>pedido</b>, seria corrupção passiva.' },
+    { lvl: 'Nível 2 · Crimes contra a administração pública', s: 'O servidor do cartório diz: “se você me der R$ 100, eu adianto o seu processo na fila”.', o: [['Concussão', 'art. 316'], ['Corrupção passiva', 'art. 317'], ['Prevaricação', 'art. 319']], a: 1, vb: 'solicitar', e: '<b>Solicitar</b> (pedir) ou <b>receber</b> vantagem indevida é corrupção passiva. Não houve imposição, então não é concussão.' },
+    { lvl: 'Nível 2 · Crimes contra a administração pública', s: 'Um servidor leva para casa, e fica para si, o notebook da repartição que estava sob a guarda dele por causa do cargo.', o: [['Furto', 'art. 155'], ['Apropriação indébita', 'art. 168'], ['Peculato', 'art. 312']], a: 2, vb: 'apropriar-se', e: 'Funcionário público que <b>se apropria</b> de bem que tem a posse <b>em razão do cargo</b> comete peculato. Se fosse um particular, seria apropriação indébita.' },
+    { lvl: 'Chefão · A pegadinha das bancas', s: 'Irritado, João escreve no grupo do trabalho que o colega Pedro “é um ladrão”, sem contar nenhum fato.', o: [['Calúnia', 'art. 138'], ['Difamação', 'art. 139'], ['Injúria', 'art. 140']], a: 2, vb: 'ofender a dignidade', e: 'Chamar alguém de ladrão, sem apontar um fato concreto, é <b>injúria</b>: ofende a dignidade. Calúnia exige <b>imputar falsamente um fato</b> definido como crime (“ele furtou o celular da Maria ontem”).' }
+  ];
+  var st = document.getElementById('stage'), pb = document.getElementById('pb'), pt = document.getElementById('pt');
+  var i = 0, score = 0, streak = 0, best = 0, res = [], timer = null, left = TIME;
+
+  function intro() {
+    pb.style.width = '2%';
+    st.innerHTML = '<div class="screen center"><div class="badge-big">🔑</div>' +
+      '<span class="kicker" style="display:block;margin-top:22px">Desafio do Verbo-Chave</span>' +
+      '<h1 style="font-size:clamp(32px,8vw,44px);margin-top:8px">Você reconhece o crime <span style="color:var(--gold2)">pelo verbo</span>?</h1>' +
+      '<p style="color:#C3CBDD;margin-top:12px;font-size:17px">7 casos que caem em prova. Acerte rápido para ganhar mais pontos, faça sequência e descubra a sua patente no fim.</p>' +
+      '<div class="stats" style="margin-top:22px"><div><b>7</b><span>casos</span></div><div><b>' + TIME + 's</b><span>por caso</span></div><div><b>3</b><span>níveis</span></div></div>' +
+      '<button class="btn gold block" id="go" style="margin-top:22px">Começar o desafio</button><p style="margin-top:12px;font-size:13px;color:#8F9BB8">Grátis · sem cadastro · 2 minutos</p></div>';
+    document.getElementById('go').onclick = function () { window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); play(); };
+  }
+
+  function hud() {
+    return '<div class="hud"><span class="chip">Caso ' + (i + 1) + '/7</span><span class="chip ' + (streak >= 2 ? 'hot' : '') + '">🔥 ' + streak + '</span><span class="chip">⭐ ' + score + '</span></div>';
+  }
+
+  function play() {
+    var c = C[i]; left = TIME;
+    pb.style.width = Math.round(i / C.length * 100) + '%'; pt.textContent = 'Caso ' + (i + 1) + ' de 7';
+    st.innerHTML = '<div class="screen">' + hud() + '<div class="timer" id="tm"><i id="ti"></i></div>' +
+      '<div class="case" id="cs"><span class="lvl">' + c.lvl + '</span><p class="sc">' + c.s + '</p><p class="muted" style="margin-top:6px">Qual é o crime?</p>' +
+      '<div class="opts">' + c.o.map(function (o, k) { return '<button class="opt" data-k="' + k + '"><span class="em">' + 'ABC'[k] + '</span><span>' + o[0] + '<small>' + o[1] + '</small></span></button>'; }).join('') + '</div><div id="ex"></div></div></div>';
+    st.querySelectorAll('.opt').forEach(function (b) { b.onclick = function () { answer(+b.dataset.k); }; });
+    var ti = document.getElementById('ti'), tm = document.getElementById('tm');
+    requestAnimationFrame(function () { ti.style.width = '100%'; });
+    clearInterval(timer);
+    timer = setInterval(function () {
+      left--; ti.style.width = Math.max(0, left / TIME * 100) + '%';
+      if (left <= 7) tm.classList.add('low');
+      if (left <= 0) { clearInterval(timer); answer(-1); }
+    }, 1000);
+    window.scrollTo(0, 0);
+  }
+
+  function burst() {
+    var em = ['⭐', '✨', '🔑', '⚖️'];
+    for (var k = 0; k < 14; k++) {
+      var d = document.createElement('span'); d.className = 'conf'; d.textContent = em[k % em.length];
+      d.style.setProperty('--x', (Math.random() * 320 - 160) + 'px'); d.style.setProperty('--y', (Math.random() * -260 - 40) + 'px'); d.style.setProperty('--r', (Math.random() * 360) + 'deg');
+      document.body.appendChild(d); setTimeout(function (n) { return function () { n.remove(); }; }(d), 1100);
+    }
+  }
+
+  function answer(k) {
+    clearInterval(timer);
+    var c = C[i], ok = k === c.a, gained = 0;
+    st.querySelectorAll('.opt').forEach(function (x, j) { x.disabled = true; if (j === c.a) x.classList.add('right'); else if (j === k) x.classList.add('wrong'); });
+    if (ok) {
+      streak++; best = Math.max(best, streak);
+      gained = 100 + Math.max(0, left) * 4 + (streak >= 2 ? (streak - 1) * 50 : 0);
+      score += gained;
+      var p = document.createElement('div'); p.className = 'pts'; p.textContent = '+' + gained; document.body.appendChild(p); setTimeout(function () { p.remove(); }, 1000);
+      burst();
+    } else { streak = 0; document.getElementById('cs').classList.add('shake'); }
+    res.push({ ok: ok, c: c });
+    var last = i === C.length - 1;
+    document.getElementById('ex').innerHTML = '<div class="exp"><b style="color:' + (ok ? 'var(--green)' : 'var(--wine)') + '">' + (ok ? (streak >= 3 ? 'Sequência de ' + streak + '! 🔥' : 'Acertou!') : k < 0 ? 'Tempo esgotado.' : 'Errou, mas agora não erra mais.') + '</b>' +
+      '<div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">Verbo-chave</div><div class="vb">' + c.vb + '</div><p style="color:var(--ink2)">' + c.e + '</p></div>' +
+      '<button class="btn navy block" id="nx" style="margin-top:14px">' + (last ? 'Ver minha patente' : 'Próximo caso') + '</button>';
+    st.querySelector('.hud').outerHTML = hud();
+    document.getElementById('nx').onclick = function () {
+      i++;
+      if (i >= C.length) return finish();
+      if (i === 3) return levelUp('Nível 2 desbloqueado', 'Crimes contra a administração pública', 'Aqui as bancas trocam um verbo e a resposta muda: exigir, solicitar, apropriar-se.');
+      if (i === 6) return levelUp('Último caso', 'O chefão: a pegadinha das bancas', 'Calúnia, difamação ou injúria? Esta derruba muita gente.');
+      play();
+    };
+  }
+
+  function levelUp(t, sub, txt) {
+    var ok = res.filter(function (r) { return r.ok; }).length;
+    st.innerHTML = '<div class="screen center" style="padding-top:20px"><div class="badge-big" style="width:110px;height:110px;font-size:46px">' + (i === 6 ? '👑' : '🏛️') + '</div>' +
+      '<span class="kicker" style="display:block;margin-top:20px">' + t + '</span><h2 style="font-size:32px;margin-top:6px">' + sub + '</h2>' +
+      '<p style="color:#C3CBDD;margin-top:10px">' + txt + '</p>' +
+      '<div class="stats"><div><b>' + ok + '/' + i + '</b><span>acertos</span></div><div><b>' + score + '</b><span>pontos</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
+      '<button class="btn gold block" id="nx" style="margin-top:22px">Continuar</button></div>';
+    document.getElementById('nx').onclick = play;
+  }
+
+  function finish() {
+    pb.style.width = '100%'; pt.textContent = 'Resultado';
+    var ok = res.filter(function (r) { return r.ok; }).length;
+    var R = ok === 7 ? ['👑', 'Delegado(a) do Verbo', 'Acerto total. Você já pensa pelo verbo: agora é levar isso para os 405 dispositivos do Código.']
+      : ok >= 5 ? ['🕵️', 'Investigador(a)', 'Você reconhece a maioria dos crimes pelo verbo. Os erros mostram exatamente onde a banca vai tentar te pegar.']
+      : ok >= 3 ? ['🛡️', 'Agente', 'Você já acerta parte dos casos, mas os crimes parecidos ainda te confundem. É aí que se perdem pontos.']
+      : ['🎖️', 'Recruta', 'Os crimes parecidos ainda se misturam. A boa notícia: com o verbo-chave, cada um passa a ter uma regra de uma frase.'];
+    window.PFOffer.trackCustom('QuizComplete', { quiz: 'desafio', acertos: ok, pontos: score });
+    var miss = res.filter(function (r) { return !r.ok; });
+    st.innerHTML = '<div class="screen"><div class="center"><div class="badge-big">' + R[0] + '</div>' +
+      '<span class="kicker" style="display:block;margin-top:20px">Sua patente</span><h1 style="font-size:clamp(32px,8vw,42px);margin-top:6px">' + R[1] + '</h1>' +
+      '<div class="dots">' + res.map(function (r) { return '<i class="' + (r.ok ? 'ok' : 'no') + '"></i>'; }).join('') + '</div>' +
+      '<div class="stats"><div><b>' + ok + '/7</b><span>acertos</span></div><div><b>' + score + '</b><span>pontos</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
+      '<p style="color:#C3CBDD;margin-top:16px;font-size:16.5px">' + R[2] + '</p></div>' +
+      (miss.length ? '<div class="rev"><span class="kicker">O que revisar</span><ul>' + miss.map(function (r) { return '<li><b>' + r.c.o[r.c.a][0] + '</b> (' + r.c.o[r.c.a][1] + '): verbo <b>' + r.c.vb + '</b></li>'; }).join('') + '</ul><p class="muted" style="margin-top:10px">No PenalFlux, o que você erra volta nos flashcards até fixar.</p></div>' : '') +
+      '<div class="light"><h2 style="font-size:28px" class="center">Foram 7 casos. O Código tem 405 dispositivos.</h2>' +
+      '<p class="center" style="color:var(--ink2);margin-top:8px;font-size:15.5px">No PenalFlux, cada um vem com o verbo-chave, a lei atualizada até 2026, a explicação em português simples, um exemplo e simulados no estilo das bancas.</p>' +
+      '<img src="/j/qz/telas.webp" alt="Telas do app PenalFlux" width="1100" height="464" style="border-radius:14px;margin-top:16px">' +
+      '<div id="oferta"></div></div></div>';
+    window.PFOffer.render(document.getElementById('oferta'), { badge: 'Desbloqueie os 405 dispositivos', cta: 'Quero o PenalFlux Completo' });
+    window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do desafio', currency: 'BRL', value: 29.9 });
+    window.scrollTo(0, 0);
+  }
+
+  intro();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diagnóstico de Direito Penal · PenalFlux</title>
+<meta name="description" content="Responda 7 perguntas e descubra onde você está perdendo pontos em Direito Penal, com um plano de estudo para a sua prova.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/j/qz/q.css?v=1">
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1021288667656467');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1021288667656467&ev=PageView&noscript=1"/></noscript>
+<script src="https://tracker.appdigitalhub.com.br/tracker.js" async data-endpoint="https://tracker.appdigitalhub.com.br" data-checkout="appdigitalhub.com.br/c/"></script>
+</head>
+<body>
+<header class="qtop"><div class="in">
+  <button class="back" id="back" aria-label="Voltar">‹</button>
+  <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg>Penal<span>Flux</span></div>
+  <div class="prog"><small id="pt">Diagnóstico</small><div class="bar"><i id="pb"></i></div></div>
+</div></header>
+<main class="stage" id="stage"></main>
+<footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
+<div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
+<script src="/j/qz/oferta.js?v=1"></script>
+<script>
+(function () {
+  'use strict';
+  var A = {}; // respostas
+  var CAR = { pol: 'concurso policial', con: 'concurso público', oab: 'OAB', fac: 'faculdade de Direito', ent: 'entender a lei' };
+  var Q = [
+    { id: 'car', k: 'Pergunta 1 de 7', t: 'Para que você estuda Direito Penal?', o: [['pol', '🚓', 'Concurso policial', 'PM, PC, PF, PRF, Polícia Penal'], ['con', '🏛️', 'Outro concurso', 'Tribunais, MP, INSS e outros'], ['oab', '⚖️', 'Exame da OAB', ''], ['fac', '🎓', 'Faculdade de Direito', ''], ['ent', '📰', 'Quero entender a lei', 'Notícia, caso na família, curiosidade']] },
+    { id: 'prz', k: 'Pergunta 2 de 7', t: 'Quando é a sua prova?', o: [['1', '⏰', 'Em menos de 1 mês', ''], ['3', '📅', 'De 1 a 3 meses', ''], ['6', '🗓️', 'De 3 a 6 meses', ''], ['0', '🔭', 'Ainda sem data', 'Estou me preparando antes do edital']] },
+    { tip: 1 },
+    { id: 'com', k: 'Pergunta 3 de 7', t: 'Como você estuda Penal hoje?', o: [['lei', '📕', 'Lendo a lei seca', 'Vade Mecum ou site do Planalto'], ['pdf', '📄', 'PDF ou apostila', ''], ['vid', '🎬', 'Videoaulas', ''], ['qst', '✍️', 'Só resolvendo questões', ''], ['nada', '🌱', 'Ainda não comecei', '']] },
+    { id: 'tra', k: 'Pergunta 4 de 7', t: 'O que mais te atrapalha em Penal?', o: [['conf', '🔀', 'Confundo crimes parecidos', 'Furto ou roubo? Concussão ou corrupção?'], ['fix', '🧠', 'Leio, mas não fixo', ''], ['pena', '🔢', 'Esqueço as penas', ''], ['ling', '📜', 'A linguagem da lei é difícil', ''], ['tempo', '⌛', 'Falta tempo', '']] },
+    { tip: 2 },
+    { id: 'tst', k: 'Pergunta 5 de 7', t: 'Teste rápido: qual é o crime?', h: 'O fiscal diz ao dono do bar: “ou você me paga R$ 5 mil, ou eu interdito o seu estabelecimento”.', o: [['a', 'A', 'Concussão', 'art. 316'], ['b', 'B', 'Corrupção passiva', 'art. 317'], ['c', 'C', 'Extorsão', 'art. 158'], ['d', '?', 'Não sei', '']], quiz: 'a' },
+    { id: 'hrs', k: 'Pergunta 6 de 7', t: 'Quanto tempo por dia você tem para Penal?', o: [['15', '☕', '15 minutos', ''], ['30', '⏱️', '30 minutos', ''], ['60', '📚', '1 hora', ''], ['120', '🔥', '2 horas ou mais', '']] },
+    { id: 'dev', k: 'Pergunta 7 de 7', t: 'Onde você mais estuda?', o: [['cel', '📱', 'No celular', 'No ônibus, no intervalo, antes de dormir'], ['pc', '💻', 'No computador', ''], ['pap', '📒', 'No papel', '']] },
+    { name: 1 }
+  ];
+  var TOTAL = Q.filter(function (q) { return q.id; }).length;
+  var i = 0, hist = [];
+  var st = document.getElementById('stage'), pb = document.getElementById('pb'), pt = document.getElementById('pt'), back = document.getElementById('back');
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var started = false;
+
+  function progress() {
+    var done = Q.slice(0, i).filter(function (q) { return q.id; }).length;
+    pb.style.width = Math.max(4, Math.round(done / TOTAL * 100)) + '%';
+    pt.textContent = done >= TOTAL ? 'Quase lá' : 'Faltam ' + (TOTAL - done) + (TOTAL - done === 1 ? ' pergunta' : ' perguntas');
+    back.classList.toggle('on', hist.length > 0);
+  }
+  function go(n) { hist.push(i); i = n; show(); window.scrollTo(0, 0); }
+  back.onclick = function () { if (!hist.length) return; i = hist.pop(); show(); };
+
+  function intro() {
+    pb.style.width = '2%'; pt.textContent = 'Leva 1 minuto';
+    st.innerHTML = '<div class="screen"><div class="dark"><span class="kicker">Diagnóstico gratuito</span>' +
+      '<h1 style="font-size:clamp(32px,8vw,44px);margin-top:10px">Descubra onde você está <span style="color:var(--gold2)">perdendo pontos</span> em Direito Penal</h1>' +
+      '<p style="margin-top:14px;font-size:17px">Responda 7 perguntas rápidas e receba um diagnóstico do seu estudo e um plano com o tempo que você tem até a prova.</p>' +
+      '<button class="btn gold block" id="go" style="margin-top:22px">Começar o diagnóstico</button>' +
+      '<p class="center" style="margin-top:12px;font-size:13px;color:#8F9BB8">Sem cadastro · resultado na hora</p></div>' +
+      '<div class="card" style="margin-top:16px;display:flex;gap:14px;align-items:center"><span style="font-size:30px">🔑</span><p style="font-size:15px;color:var(--ink2)">Feito a partir do <b style="color:var(--ink)">Método do Verbo-Chave</b>: cada crime do Código Penal tem um verbo que o diferencia dos outros.</p></div></div>';
+    document.getElementById('go').onclick = function () { started = true; window.PFOffer.trackCustom('QuizStart', { quiz: 'diagnostico' }); go(0); };
+  }
+
+  function show() {
+    var q = Q[i]; progress();
+    if (!q) return analyze();
+    if (q.tip) return tip(q.tip);
+    if (q.name) return askName();
+    st.innerHTML = '<div class="screen q"><span class="kicker">' + q.k + '</span><h2>' + q.t + '</h2>' + (q.h ? '<p class="help" style="font-size:17px;color:var(--ink)">' + q.h + '</p>' : '') +
+      '<div class="opts">' + q.o.map(function (o) { return '<button class="opt" data-v="' + o[0] + '"><span class="em">' + o[1] + '</span><span>' + o[2] + (o[3] ? '<small>' + o[3] + '</small>' : '') + '</span></button>'; }).join('') + '</div><div id="fbk"></div></div>';
+    st.querySelectorAll('.opt').forEach(function (b) {
+      b.onclick = function () {
+        A[q.id] = b.dataset.v;
+        if (!q.quiz) { b.classList.add('sel'); setTimeout(function () { go(i + 1); }, 260); return; }
+        st.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; if (x.dataset.v === q.quiz) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
+        var ok = b.dataset.v === q.quiz;
+        document.getElementById('fbk').innerHTML = '<div class="fb"><b class="' + (ok ? 'ok">Acertou.' : 'no">Não foi dessa vez.') + '</b> O verbo é <b>exigir</b>: servidor que <b>exige</b> vantagem comete <b>concussão</b>. Se ele só tivesse <b>pedido</b>, seria corrupção passiva. É assim que o PenalFlux ensina cada crime: pelo verbo.</div>' +
+          '<button class="btn navy block" id="nx" style="margin-top:14px">Continuar</button>';
+        document.getElementById('nx').onclick = function () { go(i + 1); };
+      };
+    });
+  }
+
+  function tip(n) {
+    var c = A.car || 'con';
+    var html = n === 1
+      ? '<span class="kicker">Você sabia?</span><h2 style="font-size:30px;margin-top:8px">Direito Penal é uma das matérias que mais ' + (c === 'pol' ? 'pesam nos concursos policiais' : c === 'oab' ? 'aparecem na 1ª fase da OAB' : 'aparecem em provas de Direito') + '.</h2>' +
+        '<p class="help" style="font-size:16px">E é a que mais derruba quem estuda decorando: as bancas trocam um verbo da lei e a resposta muda.</p>' +
+        '<div class="card" style="margin-top:18px"><p style="font-size:15px;color:var(--ink2)">Exemplo: <b style="color:var(--ink)">subtrair</b> é furto. <b style="color:var(--ink)">Subtrair com violência ou grave ameaça</b> é roubo. Uma expressão muda a pena de 1 a 6 anos para 6 a 10 anos (penas em vigor desde a Lei 15.397/2026).</p></div>'
+      : '<span class="kicker">Isso é mais comum do que parece</span><h2 style="font-size:30px;margin-top:8px">' + ({ conf: 'Confundir crimes parecidos', fix: 'Ler e não fixar', pena: 'Esquecer as penas', ling: 'Travar na linguagem da lei', tempo: 'Ter pouco tempo' }[A.tra] || 'Travar em Penal') + ' tem solução.</h2>' +
+        '<p class="help" style="font-size:16px">O problema não é você. É estudar o Código como um texto corrido, sem saber o que olhar em cada artigo.</p>' +
+        '<div class="card" style="margin-top:18px"><img src="/j/qz/telas.webp" alt="Telas do app PenalFlux: verbo do dia, artigo 157 com o verbo-chave, Código Penal, simulados e tabela de penas" width="1100" height="464" style="border-radius:12px"><p class="muted" style="margin-top:10px">No PenalFlux, cada artigo começa pelo verbo-chave, depois a lei, a explicação em português simples e um exemplo.</p></div>';
+    st.innerHTML = '<div class="screen">' + html + '<button class="btn navy block" id="nx" style="margin-top:20px">Continuar</button></div>';
+    document.getElementById('nx').onclick = function () { go(i + 1); };
+  }
+
+  function askName() {
+    st.innerHTML = '<div class="screen q"><span class="kicker">Última etapa</span><h2>Como você quer que o seu plano seja chamado?</h2><p class="help">Opcional. Só para personalizar o seu resultado.</p>' +
+      '<input id="nm" maxlength="30" autocomplete="given-name" placeholder="Seu primeiro nome" style="width:100%;margin-top:20px;padding:16px;border-radius:14px;border:2px solid var(--line);font:inherit;font-size:17px">' +
+      '<button class="btn gold block" id="nx" style="margin-top:14px">Ver meu diagnóstico</button><button class="muted" id="sk" style="display:block;margin:12px auto 0;text-decoration:underline">Pular</button></div>';
+    var f = function () { A.nome = (document.getElementById('nm').value || '').trim().split(/\s+/)[0].slice(0, 20); go(i + 1); };
+    document.getElementById('nx').onclick = f; document.getElementById('sk').onclick = function () { A.nome = ''; go(i + 1); };
+    document.getElementById('nm').onkeydown = function (e) { if (e.key === 'Enter') f(); };
+  }
+
+  function analyze() {
+    pb.style.width = '100%'; pt.textContent = 'Analisando'; back.classList.remove('on');
+    var c = CAR[A.car] || 'sua prova';
+    var steps = ['Analisando suas 7 respostas', 'Comparando com os crimes mais cobrados em ' + c, 'Medindo o risco de confundir verbos', 'Montando seu plano de ' + (A.hrs === '120' ? '2 horas' : A.hrs === '60' ? '1 hora' : (A.hrs || '30') + ' minutos') + ' por dia'];
+    st.innerHTML = '<div class="screen load"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" stroke="#E2E5EC" stroke-width="10" fill="none"/><circle id="arc" cx="60" cy="60" r="52" stroke="#B8913A" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327"/></svg><b id="pc">0%</b></div>' +
+      '<h2 style="font-size:28px;margin-top:22px">Preparando seu diagnóstico…</h2><ul class="steps">' + steps.map(function (s) { return '<li><i>✓</i>' + esc(s) + '</li>'; }).join('') + '</ul></div>';
+    var p = 0, li = st.querySelectorAll('.steps li'), arc = document.getElementById('arc'), pc = document.getElementById('pc');
+    var t = setInterval(function () {
+      p += 2; arc.style.strokeDashoffset = 327 - 327 * p / 100; pc.textContent = p + '%';
+      li.forEach(function (x, k) { if (p >= (k + 1) * 24) x.classList.add('done'); });
+      if (p >= 100) { clearInterval(t); setTimeout(result, 450); }
+    }, 70);
+  }
+
+  function result() {
+    window.PFOffer.trackCustom('QuizComplete', { quiz: 'diagnostico', carreira: A.car, prazo: A.prz });
+    // risco: prazo curto, estudo passivo, confusão entre crimes e erro no teste aumentam
+    var r = 0;
+    r += { '1': 3, '3': 2, '6': 1, '0': 1 }[A.prz] || 1;
+    r += { lei: 2, pdf: 2, vid: 1, qst: 1, nada: 2 }[A.com] || 1;
+    r += A.tra === 'conf' ? 2 : 1;
+    r += A.tst === 'a' ? 0 : 2;
+    var nivel = r >= 7 ? ['Alto', 'var(--wine)', 88] : r >= 5 ? ['Moderado', '#B8913A', 62] : ['Baixo', 'var(--green)', 34];
+    var perDay = { '15': 5, '30': 10, '60': 20, '120': 40 }[A.hrs] || 10;
+    var dias = Math.ceil(405 / perDay), mais = Math.max(1, Math.ceil(25 / perDay));
+    var prazoDias = { '1': 30, '3': 90, '6': 180 }[A.prz];
+    var cabe = prazoDias ? (dias <= prazoDias ? 'Dá tempo de ver o Código inteiro antes da prova, com folga para revisar.' : 'Não dá para ler o Código inteiro até a prova. Comece pelos 25 artigos mais cobrados e pelos simulados.') : 'Começando agora, você chega ao edital com o Código inteiro estudado.';
+    var nome = A.nome ? esc(A.nome) : '';
+    var c = CAR[A.car] || 'sua prova';
+    var dor = { conf: 'você confunde crimes parecidos', fix: 'você lê, mas não fixa', pena: 'você esquece as penas', ling: 'a linguagem da lei te trava', tempo: 'você tem pouco tempo' }[A.tra] || 'Penal te trava';
+    var met = { lei: 'ler a lei seca do começo ao fim', pdf: 'estudar por PDF', vid: 'assistir aulas sem treinar o reconhecimento dos crimes', qst: 'resolver questões sem entender o porquê do erro', nada: 'começar sem um método' }[A.com] || 'estudar sem método';
+
+    st.innerHTML = '<div class="screen">' +
+      '<div class="dark"><span class="kicker">' + (nome ? 'Diagnóstico de ' + nome : 'Seu diagnóstico') + '</span>' +
+      '<h1 style="font-size:clamp(28px,7vw,38px);margin-top:10px">Risco <span style="color:' + (nivel[0] === 'Baixo' ? '#7BD3A8' : 'var(--gold2)') + '">' + nivel[0].toLowerCase() + '</span> de perder pontos em Penal</h1>' +
+      '<div style="margin-top:16px;height:12px;border-radius:99px;background:linear-gradient(90deg,#1E7F5C,#B8913A,#7B1E2B);position:relative"><i style="position:absolute;top:-6px;left:calc(' + nivel[2] + '% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ' + nivel[1] + '"></i></div>' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:#8F9BB8;margin-top:8px;font-weight:700"><span>Baixo</span><span>Moderado</span><span>Alto</span></div>' +
+      '<p style="margin-top:18px">Para ' + esc(c) + ', o que mais pesa no seu caso: <b style="color:#fff">' + dor + '</b> e o hábito de <b style="color:#fff">' + met + '</b>. ' + (A.tst === 'a' ? 'Você acertou o teste da concussão, sinal de que o método do verbo funciona para você.' : 'No teste, a resposta era concussão: o verbo <b style="color:#fff">exigir</b> decide a questão.') + '</p></div>' +
+      '<div class="card" style="margin-top:16px"><span class="kicker">Seu plano' + (nome ? ', ' + nome : '') + '</span>' +
+      '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;text-align:center">' +
+      '<div style="background:var(--bg);border-radius:14px;padding:12px 6px"><b style="font-family:var(--serif);font-weight:400;font-size:30px;display:block">' + perDay + '</b><span class="muted">artigos por dia</span></div>' +
+      '<div style="background:var(--bg);border-radius:14px;padding:12px 6px"><b style="font-family:var(--serif);font-weight:400;font-size:30px;display:block">' + mais + (mais === 1 ? ' dia' : ' dias') + '</b><span class="muted">para os 25 mais cobrados</span></div>' +
+      '<div style="background:var(--bg);border-radius:14px;padding:12px 6px"><b style="font-family:var(--serif);font-weight:400;font-size:30px;display:block">' + dias + '</b><span class="muted">dias para o Código inteiro</span></div></div>' +
+      '<p style="margin-top:14px;font-size:15.5px;color:var(--ink2)">' + cabe + ' ' + (A.dev === 'cel' ? 'Como você estuda no celular, o app cabe nos intervalos do seu dia, com meta diária e lembrete.' : 'O app funciona no ' + (A.dev === 'pc' ? 'computador' : 'celular e no computador') + ', com meta diária e lembrete.') + '</p>' +
+      '<ol style="margin:14px 0 0 20px;font-size:15.5px;display:grid;gap:6px"><li><b>Semana 1:</b> os 25 artigos mais cobrados, pelo verbo-chave.</li><li><b>Depois:</b> ' + perDay + ' artigos por dia, com flashcards do que você errar.</li><li><b>Toda semana:</b> um simulado comentado no estilo das bancas.</li></ol></div>' +
+      '<h2 style="font-size:28px;margin-top:28px" class="center">Comece o seu plano hoje</h2><p class="center muted" style="font-size:15px;margin-top:6px">Tudo o que o plano usa está no PenalFlux Completo.</p>' +
+      '<div id="oferta"></div></div>';
+    window.PFOffer.render(document.getElementById('oferta'), { badge: nivel[0] === 'Baixo' ? 'Indicado para o seu perfil' : 'Indicado para risco ' + nivel[0].toLowerCase(), cta: 'Quero começar meu plano' });
+    window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do quiz', currency: 'BRL', value: 29.9 });
+    window.scrollTo(0, 0);
+  }
+
+  intro();
+})();
+</script>
+</body>
+</html>
