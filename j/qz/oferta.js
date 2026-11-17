@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   var CK = { basico: 'DF3BEC2E', completo: '423A541B', bonus: '602A3D09' };
-  var AFF = { afi: '021BD794', afib: 'C01B86B5' }; // links /j/ são do afiliado
+  var AFF = { afi: '021BD794', afib: 'C01B86B5' }; // páginas em /j/ são do afiliado (no domínio raiz, só se vier ?afi= no link)
   var OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var brl = function (v) { return 'R$ ' + v.toFixed(2).replace('.', ','); };
@@ -12,7 +12,7 @@
   // afiliado e UTMs: guarda o que veio na URL e repassa para o checkout
   var K = 'pf_aff', P = new URLSearchParams(location.search), s = {};
   try { s = JSON.parse(localStorage.getItem(K) || '{}'); } catch (e) {}
-  if (!P.get('afi')) { P.set('afi', AFF.afi); P.set('afib', AFF.afib); }
+  if (!P.get('afi') && /^\/j\//.test(location.pathname)) { P.set('afi', AFF.afi); P.set('afib', AFF.afib); }
   s = { afi: P.get('afi') || s.afi || '', afib: P.get('afib') || s.afib || '', t: Date.now() };
   try { localStorage.setItem(K, JSON.stringify(s)); } catch (e) {}
   P.delete('afi'); P.delete('afib');
