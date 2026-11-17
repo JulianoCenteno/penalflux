@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Diagnóstico de Direito Penal · PenalFlux</title>
-<meta name="description" content="Responda 7 perguntas e descubra onde você está perdendo pontos em Direito Penal, com um plano de estudo para a sua prova.">
+<meta name="description" content="Responda 11 perguntas e descubra onde você está perdendo pontos em Direito Penal, com um plano de estudo para a sua prova.">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -32,15 +32,19 @@
   var A = {}; // respostas
   var CAR = { pol: 'concurso policial', con: 'concurso público', oab: 'OAB', fac: 'faculdade de Direito', ent: 'entender a lei' };
   var Q = [
-    { id: 'car', k: 'Pergunta 1 de 7', t: 'Para que você estuda Direito Penal?', o: [['pol', '🚓', 'Concurso policial', 'PM, PC, PF, PRF, Polícia Penal'], ['con', '🏛️', 'Outro concurso', 'Tribunais, MP, INSS e outros'], ['oab', '⚖️', 'Exame da OAB', ''], ['fac', '🎓', 'Faculdade de Direito', ''], ['ent', '📰', 'Quero entender a lei', 'Notícia, caso na família, curiosidade']] },
-    { id: 'prz', k: 'Pergunta 2 de 7', t: 'Quando é a sua prova?', o: [['1', '⏰', 'Em menos de 1 mês', ''], ['3', '📅', 'De 1 a 3 meses', ''], ['6', '🗓️', 'De 3 a 6 meses', ''], ['0', '🔭', 'Ainda sem data', 'Estou me preparando antes do edital']] },
+    { id: 'car', k: 'Pergunta 1 de 11', t: 'Para que você estuda Direito Penal?', o: [['pol', '🚓', 'Concurso policial', 'PM, PC, PF, PRF, Polícia Penal'], ['con', '🏛️', 'Outro concurso', 'Tribunais, MP, INSS e outros'], ['oab', '⚖️', 'Exame da OAB', ''], ['fac', '🎓', 'Faculdade de Direito', ''], ['ent', '📰', 'Quero entender a lei', 'Notícia, caso na família, curiosidade']] },
+    { id: 'prz', k: 'Pergunta 2 de 11', t: 'Quando é a sua prova?', o: [['1', '⏰', 'Em menos de 1 mês', ''], ['3', '📅', 'De 1 a 3 meses', ''], ['6', '🗓️', 'De 3 a 6 meses', ''], ['0', '🔭', 'Ainda sem data', 'Estou me preparando antes do edital']] },
     { tip: 1 },
-    { id: 'com', k: 'Pergunta 3 de 7', t: 'Como você estuda Penal hoje?', o: [['lei', '📕', 'Lendo a lei seca', 'Vade Mecum ou site do Planalto'], ['pdf', '📄', 'PDF ou apostila', ''], ['vid', '🎬', 'Videoaulas', ''], ['qst', '✍️', 'Só resolvendo questões', ''], ['nada', '🌱', 'Ainda não comecei', '']] },
-    { id: 'tra', k: 'Pergunta 4 de 7', t: 'O que mais te atrapalha em Penal?', o: [['conf', '🔀', 'Confundo crimes parecidos', 'Furto ou roubo? Concussão ou corrupção?'], ['fix', '🧠', 'Leio, mas não fixo', ''], ['pena', '🔢', 'Esqueço as penas', ''], ['ling', '📜', 'A linguagem da lei é difícil', ''], ['tempo', '⌛', 'Falta tempo', '']] },
+    { id: 'com', k: 'Pergunta 3 de 11', t: 'Como você estuda Penal hoje?', o: [['lei', '📕', 'Lendo a lei seca', 'Vade Mecum ou site do Planalto'], ['pdf', '📄', 'PDF ou apostila', ''], ['vid', '🎬', 'Videoaulas', ''], ['qst', '✍️', 'Só resolvendo questões', ''], ['nada', '🌱', 'Ainda não comecei', '']] },
+    { id: 'tra', k: 'Pergunta 4 de 11', t: 'O que mais te atrapalha em Penal?', o: [['conf', '🔀', 'Confundo crimes parecidos', 'Furto ou roubo? Concussão ou corrupção?'], ['fix', '🧠', 'Leio, mas não fixo', ''], ['pena', '🔢', 'Esqueço as penas', ''], ['ling', '📜', 'A linguagem da lei é difícil', ''], ['tempo', '⌛', 'Falta tempo', '']] },
     { tip: 2 },
-    { id: 'tst', k: 'Pergunta 5 de 7', t: 'Teste rápido: qual é o crime?', h: 'O fiscal diz ao dono do bar: “ou você me paga R$ 5 mil, ou eu interdito o seu estabelecimento”.', o: [['a', 'A', 'Concussão', 'art. 316'], ['b', 'B', 'Corrupção passiva', 'art. 317'], ['c', 'C', 'Extorsão', 'art. 158'], ['d', '?', 'Não sei', '']], quiz: 'a' },
-    { id: 'hrs', k: 'Pergunta 6 de 7', t: 'Quanto tempo por dia você tem para Penal?', o: [['15', '☕', '15 minutos', ''], ['30', '⏱️', '30 minutos', ''], ['60', '📚', '1 hora', ''], ['120', '🔥', '2 horas ou mais', '']] },
-    { id: 'dev', k: 'Pergunta 7 de 7', t: 'Onde você mais estuda?', o: [['cel', '📱', 'No celular', 'No ônibus, no intervalo, antes de dormir'], ['pc', '💻', 'No computador', ''], ['pap', '📒', 'No papel', '']] },
+    { id: 't1', k: 'Pergunta 5 de 11 · Caso 1 de 5', law: 1, t: 'Qual é o crime?', h: 'O fiscal diz ao dono do bar: “ou você me paga R$ 5 mil, ou eu interdito o seu estabelecimento”.', o: [['a', 'A', 'Concussão', 'art. 316'], ['b', 'B', 'Corrupção passiva', 'art. 317'], ['c', 'C', 'Extorsão', 'art. 158']], quiz: 'a', vb: 'exigir', e: 'Servidor que <b>exige</b> vantagem em razão da função comete <b>concussão</b>. Se ele só tivesse <b>pedido</b>, seria corrupção passiva.' },
+    { id: 't2', k: 'Pergunta 6 de 11 · Caso 2 de 5', law: 1, t: 'E agora?', h: 'Na rua, um homem empurra a vítima e arranca a bolsa do braço dela.', o: [['a', 'A', 'Furto', 'art. 155'], ['b', 'B', 'Roubo', 'art. 157'], ['c', 'C', 'Apropriação indébita', 'art. 168']], quiz: 'b', vb: 'subtrair mediante violência', e: 'O empurrão é <b>violência contra a pessoa</b>: isso transforma o furto em <b>roubo</b>. Sem violência nem ameaça, seria furto.' },
+    { id: 'hrs', k: 'Pergunta 7 de 11', t: 'Quanto tempo por dia você tem para Penal?', o: [['15', '☕', '15 minutos', ''], ['30', '⏱️', '30 minutos', ''], ['60', '📚', '1 hora', ''], ['120', '🔥', '2 horas ou mais', '']] },
+    { id: 't3', k: 'Pergunta 8 de 11 · Caso 3 de 5', law: 1, t: 'Qual é o crime do motorista?', h: 'Parado na blitz, o motorista estende R$ 200 ao policial e diz: “deixa passar essa”.', o: [['a', 'A', 'Corrupção ativa', 'art. 333'], ['b', 'B', 'Corrupção passiva', 'art. 317'], ['c', 'C', 'Concussão', 'art. 316']], quiz: 'a', vb: 'oferecer', e: 'Quem <b>oferece</b> vantagem ao servidor comete <b>corrupção ativa</b>. O policial que aceitasse responderia por corrupção passiva.' },
+    { id: 'dev', k: 'Pergunta 9 de 11', t: 'Onde você mais estuda?', o: [['cel', '📱', 'No celular', 'No ônibus, no intervalo, antes de dormir'], ['pc', '💻', 'No computador', ''], ['pap', '📒', 'No papel', '']] },
+    { id: 't4', k: 'Pergunta 10 de 11 · Caso 4 de 5', law: 1, t: 'Qual é o crime?', h: 'Um servidor leva para casa, e fica para si, o notebook da repartição que estava sob a guarda dele por causa do cargo.', o: [['a', 'A', 'Furto', 'art. 155'], ['b', 'B', 'Apropriação indébita', 'art. 168'], ['c', 'C', 'Peculato', 'art. 312']], quiz: 'c', vb: 'apropriar-se', e: 'Funcionário público que <b>se apropria</b> de bem que tem <b>em razão do cargo</b> comete <b>peculato</b>. Se fosse um particular, seria apropriação indébita.' },
+    { id: 't5', k: 'Pergunta 11 de 11 · Caso 5 de 5', law: 1, t: 'A pegadinha das bancas', h: 'Irritado, João escreve no grupo do trabalho que o colega Pedro “é um ladrão”, sem contar nenhum fato.', o: [['a', 'A', 'Calúnia', 'art. 138'], ['b', 'B', 'Difamação', 'art. 139'], ['c', 'C', 'Injúria', 'art. 140']], quiz: 'c', vb: 'ofender a dignidade', e: 'Chamar alguém de ladrão, sem apontar um fato, é <b>injúria</b>. Calúnia exige <b>imputar falsamente um fato</b> definido como crime (“ele furtou o celular da Maria ontem”).' },
     { name: 1 }
   ];
   var TOTAL = Q.filter(function (q) { return q.id; }).length;
@@ -62,10 +66,10 @@
   back.onclick = function () { if (!hist.length) return; X.play('tap'); i = hist.pop(); show(); };
 
   function intro() {
-    pb.style.width = '2%'; pt.textContent = 'Leva 1 minuto';
+    pb.style.width = '2%'; pt.textContent = 'Leva 2 minutos';
     st.innerHTML = '<div class="screen"><div class="dark"><span class="kicker">Diagnóstico gratuito</span>' +
       '<h1 style="font-size:clamp(32px,8vw,44px);margin-top:10px">Descubra onde você está <span style="color:var(--gold2)">perdendo pontos</span> em Direito Penal</h1>' +
-      '<p style="margin-top:14px;font-size:17px">Responda 7 perguntas rápidas e receba um diagnóstico do seu estudo e um plano com o tempo que você tem até a prova.</p>' +
+      '<p style="margin-top:14px;font-size:17px">Responda 11 perguntas rápidas, incluindo 5 casos de Penal que caem em prova, e receba um diagnóstico do seu estudo e um plano para a sua prova.</p>' +
       '<button class="btn gold block" id="go" style="margin-top:22px">Começar o diagnóstico</button>' +
       '<p class="center" style="margin-top:12px;font-size:13px;color:#8F9BB8">Sem cadastro · resultado na hora</p>' +
       '<div style="margin-top:16px;display:flex;gap:10px;align-items:center;justify-content:center;background:rgba(214,180,103,.12);border:1px dashed rgba(214,180,103,.5);border-radius:14px;padding:10px 12px;font-size:14.5px;color:var(--gold2);font-weight:700"><span style="font-size:20px">💰</span>Cada resposta vale um bônus. Vá juntando até o final.</div></div>' +
@@ -84,11 +88,11 @@
       b.onclick = function () {
         var first = A[q.id] === undefined;
         A[q.id] = b.dataset.v;
-        if (!q.quiz) { b.classList.add('sel'); X.play('select'); if (first) gain('resp', 1, b); setTimeout(function () { go(i + 1); }, first ? 650 : 260); return; }
+        if (!q.quiz) { b.classList.add('sel'); X.play('select'); if (first) gain('resp', 0.5, b); setTimeout(function () { go(i + 1); }, first ? 650 : 260); return; }
         st.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; if (x.dataset.v === q.quiz) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
         var ok = b.dataset.v === q.quiz;
-        X.play(ok ? 'right' : 'wrong'); X.buzz(ok ? 30 : [40, 60, 40]); if (first) gain('teste', ok ? 2 : 1, b);
-        document.getElementById('fbk').innerHTML = '<div class="fb"><b class="' + (ok ? 'ok">Acertou.' : 'no">Não foi dessa vez.') + '</b> O verbo é <b>exigir</b>: servidor que <b>exige</b> vantagem comete <b>concussão</b>. Se ele só tivesse <b>pedido</b>, seria corrupção passiva. É assim que o PenalFlux ensina cada crime: pelo verbo.</div>' +
+        X.play(ok ? 'right' : 'wrong'); X.buzz(ok ? 30 : [40, 60, 40]); if (first) gain('teste', ok ? 1 : 0.5, b);
+        document.getElementById('fbk').innerHTML = '<div class="fb"><b class="' + (ok ? 'ok">Acertou!' : 'no">Não foi dessa vez.') + '</b><div style="margin-top:6px;font-size:12.5px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">Verbo-chave</div><div style="font-family:var(--serif);font-size:22px" class="mark">' + q.vb + '</div><p style="margin-top:4px;color:var(--ink2)">' + q.e + '</p></div>' +
           '<button class="btn navy block" id="nx" style="margin-top:14px">Continuar</button>';
         document.getElementById('nx').onclick = function () { X.play('tap'); go(i + 1); };
       };
@@ -121,7 +125,7 @@
   function analyze() {
     pb.style.width = '100%'; pt.textContent = 'Analisando'; back.classList.remove('on');
     var c = CAR[A.car] || 'sua prova';
-    var steps = ['Analisando suas 7 respostas', 'Comparando com os crimes mais cobrados em ' + c, 'Medindo o risco de confundir verbos', 'Montando seu plano de ' + (A.hrs === '120' ? '2 horas' : A.hrs === '60' ? '1 hora' : (A.hrs || '30') + ' minutos') + ' por dia'];
+    var steps = ['Analisando suas 11 respostas', 'Comparando com os crimes mais cobrados em ' + c, 'Medindo o risco de confundir verbos', 'Montando seu plano de ' + (A.hrs === '120' ? '2 horas' : A.hrs === '60' ? '1 hora' : (A.hrs || '30') + ' minutos') + ' por dia'];
     st.innerHTML = '<div class="screen load"><div class="ring"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" stroke="#E2E5EC" stroke-width="10" fill="none"/><circle id="arc" cx="60" cy="60" r="52" stroke="#B8913A" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="327" stroke-dashoffset="327"/></svg><b id="pc">0%</b></div>' +
       '<h2 style="font-size:28px;margin-top:22px">Preparando seu diagnóstico…</h2><ul class="steps">' + steps.map(function (s) { return '<li><i>✓</i>' + esc(s) + '</li>'; }).join('') + '</ul></div>';
     var p = 0, li = st.querySelectorAll('.steps li'), arc = document.getElementById('arc'), pc = document.getElementById('pc');
@@ -140,8 +144,9 @@
     r += { '1': 3, '3': 2, '6': 1, '0': 1 }[A.prz] || 1;
     r += { lei: 2, pdf: 2, vid: 1, qst: 1, nada: 2 }[A.com] || 1;
     r += A.tra === 'conf' ? 2 : 1;
-    r += A.tst === 'a' ? 0 : 2;
-    var nivel = r >= 7 ? ['Alto', 'var(--wine)', 88] : r >= 5 ? ['Moderado', '#B8913A', 62] : ['Baixo', 'var(--green)', 34];
+    var LAW = Q.filter(function (q) { return q.law; }), hits = LAW.filter(function (q) { return A[q.id] === q.quiz; }).length;
+    r += LAW.length - hits;
+    var nivel = r >= 8 ? ['Alto', 'var(--wine)', 88] : r >= 5 ? ['Moderado', '#B8913A', 62] : ['Baixo', 'var(--green)', 34];
     var perDay = { '15': 5, '30': 10, '60': 20, '120': 40 }[A.hrs] || 10;
     var dias = Math.ceil(405 / perDay), mais = Math.max(1, Math.ceil(25 / perDay));
     var prazoDias = { '1': 30, '3': 90, '6': 180 }[A.prz];
@@ -156,7 +161,7 @@
       '<h1 style="font-size:clamp(28px,7vw,38px);margin-top:10px">Risco <span style="color:' + (nivel[0] === 'Baixo' ? '#7BD3A8' : 'var(--gold2)') + '">' + nivel[0].toLowerCase() + '</span> de perder pontos em Penal</h1>' +
       '<div style="margin-top:16px;height:12px;border-radius:99px;background:linear-gradient(90deg,#1E7F5C,#B8913A,#7B1E2B);position:relative"><i style="position:absolute;top:-6px;left:calc(' + nivel[2] + '% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ' + nivel[1] + '"></i></div>' +
       '<div style="display:flex;justify-content:space-between;font-size:12px;color:#8F9BB8;margin-top:8px;font-weight:700"><span>Baixo</span><span>Moderado</span><span>Alto</span></div>' +
-      '<p style="margin-top:18px">Para ' + esc(c) + ', o que mais pesa no seu caso: <b style="color:#fff">' + dor + '</b> e o hábito de <b style="color:#fff">' + met + '</b>. ' + (A.tst === 'a' ? 'Você acertou o teste da concussão, sinal de que o método do verbo funciona para você.' : 'No teste, a resposta era concussão: o verbo <b style="color:#fff">exigir</b> decide a questão.') + '</p><a class="btn gold block" href="#oferta" id="seeb" style="margin-top:18px">Ver meu plano e meu bônus 💰</a></div>' +
+      '<p style="margin-top:18px">Para ' + esc(c) + ', o que mais pesa no seu caso: <b style="color:#fff">' + dor + '</b> e o hábito de <b style="color:#fff">' + met + '</b>. ' + 'Nos casos de Penal, você acertou <b style="color:#fff">' + hits + ' de ' + LAW.length + '</b>' + (hits === LAW.length ? ': você já pensa pelo verbo. Agora é levar isso para os 405 dispositivos.' : '. ' + (LAW.filter(function (q) { return A[q.id] !== q.quiz; }).map(function (q) { return q.o.filter(function (o) { return o[0] === q.quiz; })[0][2]; }).join(', ')) + ': é aí que a banca vai tentar te pegar.') + '</p><a class="btn gold block" href="#oferta" id="seeb" style="margin-top:18px">Ver meu plano e meu bônus 💰</a></div>' +
       '<div class="card" style="margin-top:16px"><span class="kicker">Seu plano' + (nome ? ', ' + nome : '') + '</span>' +
       '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;text-align:center">' +
       '<div style="background:var(--bg);border-radius:14px;padding:12px 6px"><b style="font-family:var(--serif);font-weight:400;font-size:30px;display:block">' + perDay + '</b><span class="muted">artigos por dia</span></div>' +
@@ -170,7 +175,7 @@
     document.getElementById('seeb').onclick = function (e) { e.preventDefault(); X.play('tap'); document.getElementById('oferta').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     var of = document.getElementById('oferta'), fin = X.fill('', document.querySelector('.dark'));
     setTimeout(function () {
-      window.PFOffer.render(of, { lines: [['Respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele fica guardado para você usar no Completo.', cta: 'Quero o Completo e começar meu plano' });
+      window.PFOffer.render(of, { lines: [['Respostas do perfil', EARN.resp], ['Casos de Penal (' + hits + ' de ' + LAW.length + ')', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele fica guardado para você usar no Completo.', cta: 'Quero o Completo e começar meu plano' });
     }, 500);
     window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do quiz', currency: 'BRL', value: 29.9 });
     window.scrollTo(0, 0);
