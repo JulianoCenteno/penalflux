@@ -16,7 +16,7 @@
 <body>
 <header class="qtop"><div class="in">
   <button class="back" id="back" aria-label="Voltar">‹</button>
-  <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg>Penal<span>Flux</span></div>
+  <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg><b style="font-weight:400">Penal<span>Flux</span></b></div>
   <div class="prog"><small id="pt">Diagnóstico</small><div class="bar"><i id="pb"></i></div></div>
 </div></header>
 <main class="stage" id="stage"></main>
@@ -49,7 +49,7 @@
   function progress() {
     var done = Q.slice(0, i).filter(function (q) { return q.id; }).length;
     pb.style.width = Math.max(4, Math.round(done / TOTAL * 100)) + '%';
-    pt.textContent = done >= TOTAL ? 'Quase lá' : 'Faltam ' + (TOTAL - done) + (TOTAL - done === 1 ? ' pergunta' : ' perguntas');
+    pt.textContent = done >= TOTAL ? 'Quase lá' : (TOTAL - done === 1 ? 'Falta 1 pergunta' : 'Faltam ' + (TOTAL - done) + ' perguntas');
     back.classList.toggle('on', hist.length > 0);
   }
   function go(n) { hist.push(i); i = n; show(); window.scrollTo(0, 0); }
@@ -119,10 +119,11 @@
       p += 2; arc.style.strokeDashoffset = 327 - 327 * p / 100; pc.textContent = p + '%';
       li.forEach(function (x, k) { if (p >= (k + 1) * 24) x.classList.add('done'); });
       if (p >= 100) { clearInterval(t); setTimeout(result, 450); }
-    }, 70);
+    }, 90);
   }
 
   function result() {
+    pt.textContent = 'Seu resultado';
     window.PFOffer.trackCustom('QuizComplete', { quiz: 'diagnostico', carreira: A.car, prazo: A.prz });
     // risco: prazo curto, estudo passivo, confusão entre crimes e erro no teste aumentam
     var r = 0;
