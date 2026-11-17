@@ -3,7 +3,7 @@
    cuida do código de afiliado, UTMs, InitiateCheckout e da confirmação de quem prefere o Básico. */
 (function () {
   'use strict';
-  var CK = { basico: 'DF3BEC2E', bonus: '602A3D09' };
+  var CK = { basico: 'DF3BEC2E', completo: '423A541B', bonus: '602A3D09' };
   var AFF = { afi: '021BD794', afib: 'C01B86B5' }; // links /j/ são do afiliado
   var OK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>';
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
@@ -74,54 +74,60 @@
     var lines = (opt.lines || []).filter(function (l) { return l[1] > 0; });
     el.innerHTML =
       '<div class="vault"><span class="kicker">Seu bônus juntado</span><div class="big" id="vb">R$ 0,00</div>' +
-      '<p>' + esc(opt.title || 'Você ganhou esse valor respondendo. Ele já está aplicado no seu acesso abaixo.') + '</p>' +
+      '<p>' + esc(opt.title || 'Você ganhou esse valor respondendo. Ele fica guardado para você usar no Completo.') + '</p>' +
       (lines.length ? '<div class="lines">' + lines.map(function (l) { return '<div><span>' + esc(l[0]) + '</span><b>+ ' + brl(l[1]) + '</b></div>'; }).join('') + '</div>' : '') + '</div>' +
       demoHTML() + depoSection() +
 
-      '<div class="deal" id="deal"><img src="/j/qz/dh-completo.webp" alt="Tudo o que vem no PenalFlux Completo" width="480" height="480" style="width:100%;max-width:320px;margin:0 auto;border-radius:14px">' +
-      '<h3 class="serif" style="font-size:28px;margin-top:8px">PenalFlux Completo</h3><p class="muted" style="font-size:15px;color:var(--ink2)">Tudo para entender e acertar Penal na prova.</p>' +
-      '<div class="base"><span style="font-size:22px">📱</span><span><b>Base:</b> os 361 artigos explicados no app, com o verbo-chave, comparador de crimes, flashcards e meta diária, atualizado com as leis de 2026.</span></div>' +
+      '<div class="deal" id="deal"><span class="badge" style="position:static;transform:none;display:inline-block;background:var(--gold);color:var(--navy);font-weight:800;font-size:13px;padding:5px 14px;border-radius:99px">Mais escolhido</span>' +
+      '<img src="/j/qz/dh-completo.webp" alt="Tudo o que vem no PenalFlux Completo" width="480" height="480" style="width:100%;max-width:300px;margin:8px auto 0;border-radius:14px">' +
+      '<h3 class="serif" style="font-size:28px;margin-top:8px">Completo</h3><p class="muted" style="font-size:15px;color:var(--ink2)">Tudo do Básico, mais tudo que faz você acertar na prova.</p>' +
+      '<div class="base"><span style="font-size:22px">📱</span><span><b>Tudo do plano Básico</b>, mais o <b>comparador de crimes</b> e os <b>flashcards</b> com repetição espaçada.</span></div>' +
       '<div class="bns"><div class="hd"><b>🎁 Bônus que vêm junto</b><span>6 bônus inclusos</span></div><div class="bgrid">' +
       BONUS.map(function (b, k) { return '<div class="bcard"><span class="inc">Incluso</span><img src="' + IMG + b[0] + '.webp" alt="" loading="lazy" width="390" height="300"><div><small>Bônus ' + (k + 1) + '</small><b>' + esc(b[1]) + '</b></div></div>'; }).join('') + '</div></div>' +
-      '<div class="row"><span>Preço do Completo</span><span>R$ 29,90</span></div>' +
-      '<div class="row b"><span>💰 Seu bônus do quiz</span><span>− ' + brl(B) + '</span></div>' +
-      '<div class="tot"><span style="font-weight:800">Você paga</span><b>' + brl(29.9 - B) + '</b></div>' +
-      '<p class="muted" style="text-align:right;margin-top:4px">pagamento único · acesso vitalício</p>' +
-      '<a class="btn go block" data-ck="bonus" href="' + link(CK.bonus, s.afi) + '" style="margin-top:14px">' + esc(opt.cta || 'Usar meu bônus e liberar o acesso') + '</a>' +
+      '<div class="price"><s>De R$ 147</s><b>R$ 29,90</b><small>pagamento único · acesso vitalício</small></div>' +
+      '<a class="btn go block" data-ck="completo" href="' + link(CK.completo, s.afi) + '">' + esc(opt.cta || 'Quero o Completo') + '</a>' +
       '<div class="pay"><span>Pix</span><span>Cartão</span><span>Boleto</span></div>' + depoMini() + '</div>' +
+
+      '<div class="plan" style="margin-top:14px;border:1px solid var(--line);box-shadow:none">' +
+      '<img src="/j/qz/dh-basico.webp" alt="O que vem no Básico: os 361 artigos explicados no app" width="480" height="480" style="width:100%;max-width:220px;margin:0 auto;border-radius:14px">' +
+      '<h3>Básico</h3><p class="muted" style="font-size:15px;color:var(--ink2)">Para entender todos os artigos.</p>' +
+      '<ul>' + ['Os 361 artigos explicados (405 dispositivos)', 'Verbo-chave, explicação e exemplo de cada um', 'Texto oficial atualizado até 2026', 'Simulado rápido', 'Garantia de 7 dias'].map(function (t) { return '<li>' + OK + '<span>' + t + '</span></li>'; }).join('') + '</ul>' +
+      '<div class="price"><s>De R$ 47</s><b>R$ 10,90</b><small>pagamento único</small></div>' +
+      '<a class="btn navy block" data-ck="basico" href="' + link(CK.basico, s.afib) + '">Quero o Básico</a></div>' +
 
       '<div class="how"><div><i>1</i><span>Você paga no Pix ou no cartão, em ambiente seguro.</span></div><div><i>2</i><span>O link do app chega na hora no seu e-mail.</span></div><div><i>3</i><span>Entra com seu nome e e-mail e começa pelo verbo-chave.</span></div></div>' +
 
       '<div class="guar"><div class="seal"><div><b>7</b><span>DIAS DE<br>GARANTIA</span></div></div><p><b style="color:var(--ink)">Garantia incondicional de 7 dias.</b> Entre, estude e faça os simulados. Se não for para você, devolvemos 100% do valor, sem perguntas.</p></div>' +
       '<div class="faq" style="margin-top:18px">' +
-      '<details><summary>O bônus é de verdade?</summary><p>Sim. O valor que você juntou no quiz já vem descontado no checkout: o Completo sai por ' + brl(29.9 - B) + ' em vez de R$ 29,90.</p></details>' +
       '<details><summary>Como recebo o acesso?</summary><p>Logo depois do pagamento você recebe o link por e-mail. No Pix e no cartão, é na hora. Para entrar, use seu nome e o e-mail da compra.</p></details>' +
       '<details><summary>Funciona no celular?</summary><p>Sim. Funciona no navegador do celular e do computador, e você pode colocar na tela inicial como um aplicativo.</p></details>' +
       '<details><summary>Está atualizado?</summary><p>Sim. O texto da lei é o oficial em vigor, conferido com o Planalto até setembro de 2026. Quando a lei muda, o app é atualizado sem custo.</p></details>' +
       '<details><summary>Garante aprovação?</summary><p>Não. O PenalFlux é material de estudo: promete que você vai entender a lei e reconhecer os crimes pelo verbo, não aprovação.</p></details>' +
-      '</div>' +
-      '<p class="center" style="margin-top:20px"><a href="' + link(CK.basico, s.afib) + '" data-ck="basico" style="color:var(--ink3);font-size:14px">Prefiro só os artigos explicados (Básico, R$ 10,90, sem o bônus)</a></p>';
+      '</div>';
 
     // barra fixa no celular
     var bar = document.createElement('div');
-    bar.className = 'stick'; bar.innerHTML = '<div><b>Completo com seu bônus: ' + brl(29.9 - B) + '</b><span>💰 ' + brl(B) + ' já aplicados</span></div><a class="btn gold" href="#deal">Liberar</a>';
+    bar.className = 'stick'; bar.innerHTML = '<div><b>Completo por R$ 29,90</b><span>Pagamento único, garantia de 7 dias</span></div><a class="btn gold" href="#deal">Quero</a>';
     document.body.appendChild(bar);
     var deal = el.querySelector('#deal');
     var onScroll = function () { var r = deal.getBoundingClientRect(); bar.classList.toggle('show', innerWidth < 760 && !(r.bottom > 0 && r.top < innerHeight)); };
     addEventListener('scroll', onScroll, { passive: true });
     bar.querySelector('a').onclick = function (e) { e.preventDefault(); fx('tap'); deal.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-    el.querySelector('a[data-ck="bonus"]').addEventListener('click', function () { fx('select'); px('InitiateCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); });
+    el.querySelector('a[data-ck="completo"]').addEventListener('click', function () { fx('select'); px('InitiateCheckout', { currency: 'BRL', value: 29.9, content_name: 'PenalFlux Completo' }); });
 
     // Básico: lembra que o bônus só vale no Completo
     var bas = el.querySelector('a[data-ck="basico"]');
     bas.addEventListener('click', function (e) {
-      e.preventDefault(); fx('tap');
+      if (sessionStorage.getItem('pf_up_seen')) { px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); return; }
+      e.preventDefault(); fx('tap'); try { sessionStorage.setItem('pf_up_seen', '1'); } catch (_) {}
       var m = document.getElementById('modal');
-      m.innerHTML = '<div class="up"><span class="tag">💰 ' + brl(B) + ' de bônus</span><h3>Seu bônus fica no Completo</h3>' +
-        '<p>O valor que você juntou no quiz só pode ser usado no Completo. No Básico você paga R$ 10,90 e não leva os simulados, os 25 mais cobrados nem as pegadinhas.</p>' +
-        '<div class="px"><s>R$ 29,90</s><b>' + brl(29.9 - B) + '</b><small>Completo com o seu bônus</small></div>' +
-        '<a class="btn go block" id="upyes" href="' + link(CK.bonus, s.afi) + '">Usar meu bônus no Completo</a><button class="no" id="upno">Continuar com o Básico, sem o bônus</button></div>';
+      m.innerHTML = '<div class="up"><span class="tag">💰 Use seus ' + brl(B) + ' de bônus</span><h3>Espera! Leve o Completo por quase o preço do Básico</h3>' +
+        '<p>Com o bônus que você juntou no quiz, o Completo sai por só R$ 8 a mais que o Básico: simulados, os 25 mais cobrados, as pegadinhas e tudo que faz acertar na prova.</p>' +
+        '<ul>' + ['Tudo do plano Básico', 'Os 25 artigos mais cobrados', 'Simulados de Penal e da Constituição', 'Tabela de penas, mapa mental e as 40 pegadinhas'].map(function (t) { return '<li>' + OK + '<span>' + t + '</span></li>'; }).join('') + '</ul>' +
+        '<div class="px"><s>De R$ 29,90</s><b>' + brl(29.9 - B) + '</b><small>pagamento único, com o seu bônus</small></div>' +
+        '<a class="btn go block" id="upyes" href="' + link(CK.bonus, s.afi) + '">Usar meu bônus: Completo por ' + brl(29.9 - B) + '</a><button class="no" id="upno">Não, quero só o Básico por R$ 10,90</button></div>';
+      fx('level');
       document.getElementById('scrim').classList.add('show');
       document.getElementById('upyes').onclick = function () { px('InitiateCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); };
       document.getElementById('upno').onclick = function () { px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); location.href = dec(bas.href); };

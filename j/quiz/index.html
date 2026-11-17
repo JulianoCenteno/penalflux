@@ -25,7 +25,7 @@
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
 <script src="/j/qz/depoimentos.js?v=1"></script>
 <script src="/j/qz/fx.js?v=1"></script>
-<script src="/j/qz/oferta.js?v=3"></script>
+<script src="/j/qz/oferta.js?v=4"></script>
 <script>
 (function () {
   'use strict';
@@ -170,7 +170,7 @@
     document.getElementById('seeb').onclick = function (e) { e.preventDefault(); X.play('tap'); document.getElementById('oferta').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     var of = document.getElementById('oferta'), fin = X.fill('', document.querySelector('.dark'));
     setTimeout(function () {
-      window.PFOffer.render(of, { lines: [['Respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele já está aplicado no seu acesso abaixo.', cta: 'Usar meu bônus e começar o plano' });
+      window.PFOffer.render(of, { lines: [['Respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele fica guardado para você usar no Completo.', cta: 'Quero o Completo e começar meu plano' });
     }, 500);
     window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do quiz', currency: 'BRL', value: 29.9 });
     window.scrollTo(0, 0);
