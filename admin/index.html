@@ -79,12 +79,25 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
 <script>
 (function () {
   'use strict';
-  var KEY = 'pf_admin_key', key = '';
-  try { key = localStorage.getItem(KEY) || ''; } catch (e) {}
+  // login: o mesmo do painel do Forja do Herói (Supabase Auth). A senha vai direto do navegador para o Forja.
+  var FH_URL = 'https://lpdicrpetxqnoxceozfa.supabase.co', FH_KEY = 'sb_publishable_ceGy_dHSjG3cngC8mVAPLg_R4sxr5kA';
+  var KEY = 'pf_admin_key', SKEY = 'pf_admin_sess', key = '', sess = null;
+  try { key = localStorage.getItem(KEY) || ''; sess = JSON.parse(localStorage.getItem(SKEY) || 'null'); } catch (e) {}
+  var saveSess = function (j) { sess = { at: j.access_token, rt: j.refresh_token, exp: Date.now() + (j.expires_in || 3600) * 1000 - 60000, email: j.user && j.user.email }; try { localStorage.setItem(SKEY, JSON.stringify(sess)); } catch (e) {} };
+  var auth = function (grant, body) {
+    return fetch(FH_URL + '/auth/v1/token?grant_type=' + grant, { method: 'POST', headers: { apikey: FH_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(/invalid/i.test(j.error_description || j.msg || j.error_code || '') ? 'E-mail ou senha incorretos.' : (j.error_description || j.msg || 'Não foi possível entrar.')); saveSess(j); return j; }); });
+  };
+  var fresh = function () {
+    if (key && !sess) return Promise.resolve();
+    if (!sess) return Promise.reject(Object.assign(new Error('Entre com seu login.'), { status: 401 }));
+    if (sess.exp > Date.now()) return Promise.resolve();
+    return auth('refresh_token', { refresh_token: sess.rt }).catch(function () { sess = null; try { localStorage.removeItem(SKEY); } catch (e) {} throw Object.assign(new Error('Sua sessão expirou. Entre de novo.'), { status: 401 }); });
+  };
   var app = document.getElementById('app');
   var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var api = function (path) {
-    return fetch('/api/admin/' + path, { headers: { 'x-pf-admin': key } }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Object.assign(new Error(j.error || 'erro'), { status: r.status }); return j; }); });
+    return fresh().then(function () { var h = {}; if (sess) h.Authorization = 'Bearer ' + sess.at; else h['x-pf-admin'] = key; return fetch('/api/admin/' + path, { headers: h }); }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Object.assign(new Error(j.error || 'erro'), { status: r.status }); return j; }); });
   };
   var dt = function (s) { if (!s) return '—'; var d = new Date(s); return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); };
   var ago = function (s) {
@@ -96,15 +109,24 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
   var KIND = { login: 'Entrou no app', app: 'Abriu o app', pdf: 'Baixou PDF', login_fail: 'Login falhou' };
 
   // ---------------- login ----------------
-  function login(msg) {
-    app.innerHTML = '<div class="login"><div class="brand" style="color:var(--navy)">Penal<span style="color:var(--gold)">Flux</span></div><p class="sub" style="margin-top:6px">Painel do administrador</p>' +
-      '<input id="k" type="password" autocomplete="current-password" placeholder="Chave de acesso"><button class="btn" id="go">Entrar</button><div class="err" id="er">' + esc(msg || '') + '</div></div>';
+  function login(msg, withKey) {
+    app.innerHTML = '<div class="login"><div class="brand" style="color:var(--navy)">Penal<span style="color:var(--gold)">Flux</span></div><p class="sub" style="margin-top:6px">Painel do administrador · mesmo login do Forja do Herói</p>' +
+      (withKey ? '<input id="k" type="password" autocomplete="off" placeholder="Chave de acesso">'
+        : '<input id="em" type="email" autocomplete="username" placeholder="E-mail"><input id="pw" type="password" autocomplete="current-password" placeholder="Senha">') +
+      '<button class="btn" id="go">Entrar</button><div class="err" id="er">' + esc(msg || '') + '</div>' +
+      '<button class="mut" id="alt" style="margin-top:6px;text-decoration:underline">' + (withKey ? 'Entrar com e-mail e senha' : 'Entrar com a chave reserva') + '</button></div>';
+    var er = document.getElementById('er');
     var go = function () {
-      key = document.getElementById('k').value.trim(); if (!key) return;
-      api('check').then(function () { try { localStorage.setItem(KEY, key); } catch (e) {} boot(); }).catch(function (e) { document.getElementById('er').textContent = e.message; });
+      er.textContent = '';
+      var p;
+      if (withKey) { key = document.getElementById('k').value.trim(); if (!key) return; sess = null; try { localStorage.removeItem(SKEY); } catch (e) {} p = Promise.resolve(); }
+      else { var em = document.getElementById('em').value.trim(), pw = document.getElementById('pw').value; if (!em || !pw) return; key = ''; p = auth('password', { email: em, password: pw }); }
+      p.then(function () { return api('check'); }).then(function () { if (withKey) try { localStorage.setItem(KEY, key); } catch (e) {} boot(); })
+        .catch(function (e) { er.textContent = e.status === 401 ? 'Esse login não tem permissão de admin do PenalFlux.' : e.message; if (!withKey) { sess = null; try { localStorage.removeItem(SKEY); } catch (x) {} } });
     };
     document.getElementById('go').onclick = go;
-    document.getElementById('k').onkeydown = function (e) { if (e.key === 'Enter') go(); };
+    app.querySelectorAll('input').forEach(function (i) { i.onkeydown = function (e) { if (e.key === 'Enter') go(); }; });
+    document.getElementById('alt').onclick = function () { login('', !withKey); };
   }
 
   // ---------------- casca ----------------
@@ -114,14 +136,14 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       '<div class="tabs"><button data-t="clientes">Clientes</button><button data-t="funil">Funil do quiz</button><button data-t="vendas">Webhooks</button></div><button class="out" id="out">Sair</button></div></div><div class="wrap" id="main"></div>' +
       '<div class="dr" id="dr"><div class="pn" id="pn"></div></div>';
     document.querySelectorAll('[data-t]').forEach(function (b) { b.onclick = function () { tab = b.dataset.t; draw(); }; });
-    document.getElementById('out').onclick = function () { try { localStorage.removeItem(KEY); } catch (e) {} key = ''; login(); };
+    document.getElementById('out').onclick = function () { try { localStorage.removeItem(KEY); localStorage.removeItem(SKEY); } catch (e) {} key = ''; sess = null; login(); };
     document.getElementById('dr').onclick = function (e) { if (e.target.id === 'dr') e.target.classList.remove('show'); };
     draw();
   }
   function draw() {
     document.querySelectorAll('[data-t]').forEach(function (b) { b.classList.toggle('on', b.dataset.t === tab); });
     var m = document.getElementById('main'); m.innerHTML = '<div class="empty">Carregando…</div>';
-    var fail = function (e) { if (e.status === 401) return login('Chave inválida. Entre de novo.'); m.innerHTML = '<div class="empty">Erro: ' + esc(e.message) + '</div>'; };
+    var fail = function (e) { if (e.status === 401) return login(e.message); m.innerHTML = '<div class="empty">Erro: ' + esc(e.message) + '</div>'; };
     if (tab === 'clientes') api('customers').then(function (d) { C = d; clientes(m, d); }).catch(fail);
     else if (tab === 'funil') funil(m).catch(fail);
     else api('webhooks').then(function (d) { vendas(m, d); }).catch(fail);
@@ -239,7 +261,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       '</tbody></table></div></div>';
   }
 
-  if (key) api('check').then(boot).catch(function () { login(); }); else login();
+  if (key || sess) api('check').then(boot).catch(function () { login(); }); else login();
 })();
 </script>
 </body>

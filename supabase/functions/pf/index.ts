@@ -7,7 +7,8 @@
 //   GET  /pdf?f=especiais   link temporário do PDF
 //   POST /logout
 //   POST /qe                etapa do funil dos quizzes (sem login)
-//   GET  /admin/...         painel do admin (header x-pf-admin com a chave de pf_settings.admin_key)
+//   GET  /admin/...         painel do admin: login do Forja do Herói (Authorization: Bearer) com e-mail em
+//                           pf_settings.admin_emails, ou a chave reserva pf_settings.admin_key (header x-pf-admin)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
@@ -19,7 +20,7 @@ const SESSION_DAYS = 180;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-pf-token, x-pf-admin",
+  "Access-Control-Allow-Headers": "content-type, x-pf-token, x-pf-admin, authorization",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 const json = (body: unknown, status = 200) =>
@@ -340,15 +341,35 @@ async function quizEvent(req: Request) {
 }
 
 // ---------- Painel do admin ----------
+// O login é o mesmo do painel do Forja do Herói (Supabase Auth do projeto lpdicrpetxqnoxceozfa).
+const FH_URL = "https://lpdicrpetxqnoxceozfa.supabase.co";
+const FH_KEY = "sb_publishable_ceGy_dHSjG3cngC8mVAPLg_R4sxr5kA"; // chave pública do Forja
+const adminCache = new Map<string, { email: string; until: number }>();
+async function adminEmail(req: Request) {
+  const tok = (req.headers.get("authorization") || "").replace(/^Bearer\s+/i, "");
+  if (!tok || tok.length < 20) return null;
+  const c = adminCache.get(tok);
+  if (c && c.until > Date.now()) return c.email;
+  const r = await fetch(FH_URL + "/auth/v1/user", { headers: { apikey: FH_KEY, Authorization: "Bearer " + tok } });
+  if (!r.ok) return null;
+  const u = await r.json().catch(() => null);
+  const email = normEmail(u?.email);
+  const allowed = String((await setting("admin_emails")) || "").split(",").map(normEmail).filter(Boolean);
+  if (!email || !allowed.includes(email)) return null;
+  adminCache.set(tok, { email, until: Date.now() + 5 * 6e4 });
+  return email;
+}
 async function admin(req: Request, url: URL, route: string) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "?";
   const real = await setting("admin_key");
   const given = req.headers.get("x-pf-admin") || "";
-  if (!real || !safeEqual(await sha256(given), await sha256(real))) {
+  const byKey = !!given && !!real && safeEqual(await sha256(given), await sha256(real));
+  const who = byKey ? "chave" : await adminEmail(req);
+  if (!who) {
     if (!(await hit("adm:" + ip, 10, 15))) return json({ error: "Muitas tentativas. Espere 15 minutos." }, 429);
-    return json({ error: "Chave inválida." }, 401);
+    return json({ error: "Login sem permissão de admin ou expirado. Entre de novo." }, 401);
   }
-  if (route === "/admin/check") return json({ ok: true });
+  if (route === "/admin/check") return json({ ok: true, who });
   if (route === "/admin/customers") {
     const { data, error } = await db.rpc("pf_admin_customers");
     if (error) throw new Error(error.message);
