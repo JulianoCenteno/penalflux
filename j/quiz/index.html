@@ -169,7 +169,7 @@
     document.getElementById('seeb').onclick = function (e) { e.preventDefault(); X.play('tap'); document.getElementById('oferta').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     var of = document.getElementById('oferta'), fin = X.fill('', document.querySelector('.dark'));
     setTimeout(function () {
-      window.PFOffer.render(of, { lines: [['7 respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele já está aplicado no seu acesso abaixo.', cta: 'Usar meu bônus e começar o plano' });
+      window.PFOffer.render(of, { lines: [['Respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele já está aplicado no seu acesso abaixo.', cta: 'Usar meu bônus e começar o plano' });
     }, 500);
     window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do quiz', currency: 'BRL', value: 29.9 });
     window.scrollTo(0, 0);
