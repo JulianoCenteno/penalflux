@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel · PenalFlux</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#0E1A33;--gold:#B8913A;--gold2:#D6B467;--goldbg:#F7F0DE;--wine:#7B1E2B;--winebg:#F6E8EA;--bg:#F3F4F7;--ink:#0E1A33;--ink2:#4E5A73;--ink3:#8A93A8;--line:#E2E5EC;--green:#1E7F5C;--greenbg:#E4F2EC;--amber:#9A6A00;--amberbg:#FFF4D6;--serif:'DM Serif Display',Georgia,serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Manrope,system-ui,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+.top{background:var(--navy);color:#fff;padding:12px 20px;position:sticky;top:0;z-index:10}
+.top .in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{font-family:var(--serif);font-size:22px}.brand span{color:var(--gold2)}
+.tabs{display:flex;gap:4px;margin-left:12px}
+.tabs button{padding:8px 14px;border-radius:10px;font-weight:700;color:#AEB8CF}
+.tabs button.on{background:rgba(214,180,103,.16);color:var(--gold2)}
+.out{margin-left:auto;color:#AEB8CF;font-size:13px;font-weight:700}
+.wrap{max-width:1200px;margin:0 auto;padding:22px 20px 60px}
+h1{font-family:var(--serif);font-weight:400;font-size:30px}
+.sub{color:var(--ink3);font-size:13.5px;margin-top:2px}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.chip{padding:7px 13px;border-radius:99px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:13.5px}
+.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.inp{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:#fff;min-width:220px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:16px}
+.kpi{background:#fff;border-radius:16px;padding:14px 16px;border:1px solid var(--line)}
+.kpi b{display:block;font-family:var(--serif);font-weight:400;font-size:32px;line-height:1.1}
+.kpi span{font-size:13px;color:var(--ink2);font-weight:700}
+.kpi small{display:block;font-size:12px;color:var(--ink3);margin-top:2px}
+.kpi.alert{border-color:#E9C7CC;background:var(--winebg)}.kpi.alert b{color:var(--wine)}
+.card{background:#fff;border-radius:16px;border:1px solid var(--line);margin-top:16px;overflow:hidden}
+.card h2{font-size:16px;font-weight:800;padding:14px 16px 0}
+.card .h2s{font-size:13px;color:var(--ink3);padding:0 16px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);font-weight:800;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;font-size:14px}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
+.tw{overflow-x:auto}
+.mut{color:var(--ink3);font-size:12.5px}
+.tag{display:inline-block;font-size:11.5px;font-weight:800;padding:2px 8px;border-radius:99px;background:var(--bg);color:var(--ink2);margin:1px 2px 1px 0;white-space:nowrap}
+.tag.g{background:var(--greenbg);color:var(--green)}.tag.r{background:var(--winebg);color:var(--wine)}.tag.y{background:var(--amberbg);color:var(--amber)}.tag.n{background:var(--goldbg);color:#8E6C24}
+.empty{padding:28px 16px;text-align:center;color:var(--ink3)}
+/* funil */
+.fun{padding:12px 16px 16px;display:grid;gap:6px}
+.frow{display:grid;grid-template-columns:200px 1fr 120px;gap:12px;align-items:center}
+.frow .lb{font-weight:700;font-size:13.5px}
+.frow .lb small{display:block;font-weight:500;color:var(--ink3);font-size:12px}
+.track{height:26px;background:var(--bg);border-radius:8px;overflow:hidden;position:relative}
+.track i{display:block;height:100%;background:linear-gradient(90deg,#1D3062,#3B5BA9);border-radius:8px;min-width:2px}
+.track i.off{background:linear-gradient(90deg,#B8913A,#D6B467)}
+.track em{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:800;font-size:12.5px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.frow .nm{text-align:right;font-size:13px}
+.frow .nm b{font-size:15px}
+.drop{color:var(--wine);font-weight:800;font-size:12px}
+.sep{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);margin:10px 0 2px}
+@media (max-width:700px){.frow{grid-template-columns:120px 1fr 74px}}
+/* login */
+.login{max-width:380px;margin:12vh auto;background:#fff;border-radius:20px;padding:26px;border:1px solid var(--line);text-align:center}
+.login input{width:100%;margin-top:14px;padding:13px;border-radius:12px;border:1px solid var(--line);font-size:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border-radius:12px;font-weight:800;background:var(--navy);color:#fff;width:100%;margin-top:12px}
+.err{color:var(--wine);font-size:13.5px;margin-top:10px;min-height:20px}
+/* gaveta */
+.dr{position:fixed;inset:0;background:rgba(8,14,30,.5);display:none;z-index:30}
+.dr.show{display:block}
+.dr .pn{position:absolute;right:0;top:0;bottom:0;width:min(520px,100%);background:#fff;overflow:auto;padding:20px}
+.tl{list-style:none;margin-top:10px}
+.tl li{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.x{float:right;font-size:22px;line-height:1;color:var(--ink3)}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+(function () {
+  'use strict';
+  var KEY = 'pf_admin_key', key = '';
+  try { key = localStorage.getItem(KEY) || ''; } catch (e) {}
+  var app = document.getElementById('app');
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var api = function (path) {
+    return fetch('/api/admin/' + path, { headers: { 'x-pf-admin': key } }).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw Object.assign(new Error(j.error || 'erro'), { status: r.status }); return j; }); });
+  };
+  var dt = function (s) { if (!s) return '—'; var d = new Date(s); return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) + ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); };
+  var ago = function (s) {
+    if (!s) return '—'; var m = (Date.now() - new Date(s).getTime()) / 6e4;
+    if (m < 2) return 'agora'; if (m < 60) return 'há ' + Math.round(m) + ' min'; var h = m / 60; if (h < 24) return 'há ' + Math.round(h) + ' h'; var d = h / 24; return 'há ' + Math.round(d) + (Math.round(d) === 1 ? ' dia' : ' dias');
+  };
+  var pct = function (a, b) { return b ? Math.round(a / b * 100) : 0; };
+  var PROD = { basico: 'Básico', completo: 'Completo', todos: 'Leve Todos', especiais: 'Leis Especiais', verbos: 'Mapa dos Verbos', cpp: 'Processo Penal', banco: 'Banco de Questões', mini: 'Simulado Diário', audio: 'Áudios' };
+  var KIND = { login: 'Entrou no app', app: 'Abriu o app', pdf: 'Baixou PDF', login_fail: 'Login falhou' };
+
+  // ---------------- login ----------------
+  function login(msg) {
+    app.innerHTML = '<div class="login"><div class="brand" style="color:var(--navy)">Penal<span style="color:var(--gold)">Flux</span></div><p class="sub" style="margin-top:6px">Painel do administrador</p>' +
+      '<input id="k" type="password" autocomplete="current-password" placeholder="Chave de acesso"><button class="btn" id="go">Entrar</button><div class="err" id="er">' + esc(msg || '') + '</div></div>';
+    var go = function () {
+      key = document.getElementById('k').value.trim(); if (!key) return;
+      api('check').then(function () { try { localStorage.setItem(KEY, key); } catch (e) {} boot(); }).catch(function (e) { document.getElementById('er').textContent = e.message; });
+    };
+    document.getElementById('go').onclick = go;
+    document.getElementById('k').onkeydown = function (e) { if (e.key === 'Enter') go(); };
+  }
+
+  // ---------------- casca ----------------
+  var tab = 'clientes', C = null;
+  function boot() {
+    app.innerHTML = '<div class="top"><div class="in"><div class="brand">Penal<span>Flux</span> <span style="color:#AEB8CF;font-family:Manrope;font-size:13px;font-weight:700">painel</span></div>' +
+      '<div class="tabs"><button data-t="clientes">Clientes</button><button data-t="funil">Funil do quiz</button><button data-t="vendas">Webhooks</button></div><button class="out" id="out">Sair</button></div></div><div class="wrap" id="main"></div>' +
+      '<div class="dr" id="dr"><div class="pn" id="pn"></div></div>';
+    document.querySelectorAll('[data-t]').forEach(function (b) { b.onclick = function () { tab = b.dataset.t; draw(); }; });
+    document.getElementById('out').onclick = function () { try { localStorage.removeItem(KEY); } catch (e) {} key = ''; login(); };
+    document.getElementById('dr').onclick = function (e) { if (e.target.id === 'dr') e.target.classList.remove('show'); };
+    draw();
+  }
+  function draw() {
+    document.querySelectorAll('[data-t]').forEach(function (b) { b.classList.toggle('on', b.dataset.t === tab); });
+    var m = document.getElementById('main'); m.innerHTML = '<div class="empty">Carregando…</div>';
+    var fail = function (e) { if (e.status === 401) return login('Chave inválida. Entre de novo.'); m.innerHTML = '<div class="empty">Erro: ' + esc(e.message) + '</div>'; };
+    if (tab === 'clientes') api('customers').then(function (d) { C = d; clientes(m, d); }).catch(fail);
+    else if (tab === 'funil') funil(m).catch(fail);
+    else api('webhooks').then(function (d) { vendas(m, d); }).catch(fail);
+  }
+
+  // ---------------- clientes ----------------
+  var filt = 'todos', q = '';
+  function clientes(m, d) {
+    var L = (d.customers || []).filter(function (c) { return c.paid; });
+    var never = L.filter(function (c) { return !c.first_login; });
+    var act7 = L.filter(function (c) { return c.last_seen && Date.now() - new Date(c.last_seen) < 7 * 864e5; });
+    var fails = d.fails || [];
+    m.innerHTML = '<h1>Clientes</h1><p class="sub">Quem comprou, se já entrou no app e o que está usando. Atualiza a cada abertura desta tela.</p>' +
+      '<div class="kpis"><div class="kpi"><span>Compradores</span><b>' + L.length + '</b><small>com compra aprovada</small></div>' +
+      '<div class="kpi"><span>Já entraram no app</span><b>' + (L.length - never.length) + '</b><small>' + pct(L.length - never.length, L.length) + '% dos compradores</small></div>' +
+      '<div class="kpi ' + (never.length ? 'alert' : '') + '"><span>Pagaram e nunca entraram</span><b>' + never.length + '</b><small>mande o acesso para eles</small></div>' +
+      '<div class="kpi"><span>Ativos nos últimos 7 dias</span><b>' + act7.length + '</b><small>abriram o app</small></div></div>' +
+      '<div class="bar"><button class="chip" data-f="todos">Todos</button><button class="chip" data-f="nunca">Nunca entraram</button><button class="chip" data-f="ativos">Ativos 7 dias</button><button class="chip" data-f="inativos">Sumiram (14+ dias)</button>' +
+      '<input class="inp" id="q" placeholder="Buscar nome ou e-mail" value="' + esc(q) + '"></div>' +
+      '<div class="card"><div class="tw"><table><thead><tr><th>Cliente</th><th>Comprou</th><th>Produtos</th><th>Situação</th><th>Último acesso</th><th>Aberturas</th><th>PDFs</th><th>Aparelhos</th></tr></thead><tbody id="tb"></tbody></table></div></div>' +
+      '<div class="card"><h2>Logins que falharam</h2><p class="h2s">Pessoas que tentaram entrar e não conseguiram (e-mail diferente do da compra ou nome que não confere).</p><div class="tw"><table><thead><tr><th>Quando</th><th>E-mail digitado</th><th>Nome digitado</th><th>Motivo</th><th>Aparelho</th></tr></thead><tbody>' +
+      (fails.length ? fails.map(function (f) { var dd = f.detail || {}; return '<tr><td>' + dt(f.at) + '</td><td>' + esc(f.email) + '</td><td>' + esc(dd.nome || '') + '</td><td><span class="tag ' + (dd.motivo === 'nome não confere' ? 'y' : 'r') + '">' + esc(dd.motivo || '') + '</span></td><td class="mut">' + esc(dd.aparelho || '') + '</td></tr>'; }).join('') : '<tr><td colspan="5" class="empty">Nenhuma falha registrada.</td></tr>') +
+      '</tbody></table></div></div>';
+    var rows = function () {
+      var s = q.toLowerCase();
+      var R = L.filter(function (c) {
+        if (filt === 'nunca' && c.first_login) return false;
+        if (filt === 'ativos' && !(c.last_seen && Date.now() - new Date(c.last_seen) < 7 * 864e5)) return false;
+        if (filt === 'inativos' && !(c.first_login && (!c.last_seen || Date.now() - new Date(c.last_seen) > 14 * 864e5))) return false;
+        return !s || (c.email + ' ' + (c.name || '')).toLowerCase().indexOf(s) >= 0;
+      });
+      document.getElementById('tb').innerHTML = R.length ? R.map(function (c) {
+        var sit = !c.first_login ? '<span class="tag r">Nunca entrou</span>' : (Date.now() - new Date(c.last_seen) < 7 * 864e5 ? '<span class="tag g">Ativo</span>' : '<span class="tag y">Parado</span>');
+        if (c.fails && !c.first_login) sit += '<span class="tag y">' + c.fails + ' login falhou</span>';
+        return '<tr class="click" data-e="' + esc(c.email) + '"><td><b>' + esc(c.name || '—') + '</b><div class="mut">' + esc(c.email) + '</div></td><td>' + dt(c.bought_at) + '</td><td>' +
+          (c.products || []).filter(function (p) { return !(p === 'basico' && (c.products || []).indexOf('completo') >= 0); }).map(function (p) { return '<span class="tag n">' + esc(PROD[p] || p) + '</span>'; }).join('') +
+          '</td><td>' + sit + '</td><td>' + ago(c.last_seen) + '</td><td>' + (c.logins + c.opens) + '</td><td>' + c.pdfs + '</td><td>' + c.devices + '</td></tr>';
+      }).join('') : '<tr><td colspan="8" class="empty">Ninguém nesse filtro.</td></tr>';
+      document.querySelectorAll('#tb tr[data-e]').forEach(function (tr) { tr.onclick = function () { detalhe(tr.dataset.e); }; });
+      document.querySelectorAll('[data-f]').forEach(function (b) { b.classList.toggle('on', b.dataset.f === filt); });
+    };
+    document.querySelectorAll('[data-f]').forEach(function (b) { b.onclick = function () { filt = b.dataset.f; rows(); }; });
+    document.getElementById('q').oninput = function (e) { q = e.target.value; rows(); };
+    rows();
+  }
+  function detalhe(email) {
+    var dr = document.getElementById('dr'), pn = document.getElementById('pn');
+    pn.innerHTML = '<button class="x" id="xx">×</button><h1 style="font-size:24px">' + esc(email) + '</h1><div class="empty">Carregando…</div>'; dr.classList.add('show');
+    document.getElementById('xx').onclick = function () { dr.classList.remove('show'); };
+    api('activity?email=' + encodeURIComponent(email)).then(function (d) {
+      pn.innerHTML = '<button class="x" id="xx">×</button><h1 style="font-size:24px">' + esc(email) + '</h1>' +
+        '<p class="sub" style="margin-top:12px;font-weight:800;color:var(--ink)">Pedidos</p>' + (d.orders.map(function (o) { return '<div style="margin-top:6px"><span class="tag ' + (o.status === 'paid' ? 'g' : 'r') + '">' + esc(o.status) + '</span> ' + dt(o.created_at) + ' · ' + (o.products || []).map(function (p) { return esc(PROD[p] || p); }).join(', ') + (o.amount ? ' · R$ ' + Number(o.amount).toFixed(2).replace('.', ',') : '') + '</div>'; }).join('') || '<div class="mut">—</div>') +
+        '<p class="sub" style="margin-top:14px;font-weight:800;color:var(--ink)">Aparelhos conectados (' + d.sessions.length + ' de 2)</p>' + (d.sessions.map(function (s) { return '<div class="mut" style="margin-top:4px">' + esc((s.ua || '').slice(0, 90)) + '<br>entrou ' + dt(s.created_at) + ' · visto ' + ago(s.last_seen) + '</div>'; }).join('') || '<div class="mut">Nenhum</div>') +
+        '<p class="sub" style="margin-top:14px;font-weight:800;color:var(--ink)">Atividade</p><ul class="tl">' + (d.activity.map(function (a) { var dd = a.detail || {}; return '<li><span class="mut">' + dt(a.at) + '</span><span>' + esc(KIND[a.kind] || a.kind) + (dd.f ? ' · ' + esc(dd.f) : '') + (dd.motivo ? ' · ' + esc(dd.motivo) : '') + (dd.aparelho ? ' <span class="mut">(' + esc(dd.aparelho) + ')</span>' : '') + '</span></li>'; }).join('') || '<li><span class="mut">—</span><span>Nada registrado ainda</span></li>') + '</ul>';
+      document.getElementById('xx').onclick = function () { dr.classList.remove('show'); };
+    });
+  }
+
+  // ---------------- funil ----------------
+  var QZ = 'desafio', PER = '7';
+  var OFFER = [['bonus_view', 'Viu o bônus'], ['offer_view', 'Viu os planos'], ['click_completo', 'Clicou no Completo'], ['click_basico', 'Clicou no Básico (abriu o pop-up)'], ['popup_yes', 'Pop-up: aceitou o Completo R$ 18,90'], ['popup_no', 'Pop-up: ficou no Básico']];
+  var STEPS = {
+    desafio: [['sep', 'Entrada'], ['view', 'Abriu a página'], ['start', 'Começou o desafio'], ['sep', 'Casos'],
+      ['c1', 'Caso 1 · furto'], ['c2', 'Caso 2 · roubo'], ['c3', 'Caso 3 · estelionato'], ['c4', 'Caso 4 · apropriação indébita'], ['c5', 'Caso 5 · extorsão'], ['lvl2', 'Tela do nível 2'],
+      ['c6', 'Caso 6 · concussão'], ['c7', 'Caso 7 · corrupção passiva'], ['c8', 'Caso 8 · corrupção ativa'], ['c9', 'Caso 9 · peculato'], ['boss', 'Tela do chefão'], ['c10', 'Caso 10 · injúria'],
+      ['result', 'Viu a patente'], ['sep', 'Oferta']].concat(OFFER),
+    diagnostico: [['sep', 'Entrada'], ['view', 'Abriu a página'], ['start', 'Começou o diagnóstico'], ['sep', 'Perguntas'],
+      ['car', '1 · Para que estuda'], ['prz', '2 · Data da prova'], ['com', '3 · Como estuda'], ['tra', '4 · O que atrapalha'], ['t1', '5 · Caso: concussão'], ['t2', '6 · Caso: roubo'], ['hrs', '7 · Tempo por dia'],
+      ['t3', '8 · Caso: corrupção ativa'], ['dev', '9 · Onde estuda'], ['t4', '10 · Caso: peculato'], ['t5', '11 · Caso: injúria'], ['name', 'Nome (opcional)'], ['analyze', 'Tela de análise'], ['result', 'Viu o diagnóstico'], ['sep', 'Oferta']].concat(OFFER)
+  };
+  function range() {
+    var to = new Date(Date.now() + 6e4), from;
+    if (PER === 'hoje') { from = new Date(); from.setHours(0, 0, 0, 0); } else if (PER === 'tudo') from = new Date('2026-01-01'); else from = new Date(Date.now() - (+PER) * 864e5);
+    return { from: from, to: to };
+  }
+  function funil(m) {
+    var r = range();
+    var pc = C ? Promise.resolve(C) : api('customers').then(function (d) { C = d; return d; });
+    return Promise.all([api('funnel?quiz=' + QZ + '&from=' + encodeURIComponent(r.from.toISOString()) + '&to=' + encodeURIComponent(r.to.toISOString())), pc]).then(function (res) {
+      var d = res[0], S = d.steps || {}, A = d.answers || {};
+      var view = S.view || 0, start = S.start || 0, result = S.result || 0, buy = (S.click_completo || 0) + (S.popup_yes || 0) + (S.click_basico_direto || 0) + (S.popup_no || 0);
+      var sales = (res[1].customers || []).filter(function (c) { return c.paid && new Date(c.bought_at) >= r.from; }).length;
+      var maxv = Math.max(1, view), prev = null;
+      var rows = STEPS[QZ].map(function (s) {
+        if (s[0] === 'sep') { prev = prev; return '<div class="sep">' + s[1] + '</div>'; }
+        var n = S[s[0]] || 0, off = OFFER.some(function (o) { return o[0] === s[0]; });
+        var drop = prev != null && prev > 0 && !off ? Math.round((1 - n / prev) * 100) : null;
+        var ans = A[s[0]] ? ' · ' + pct(A[s[0]].ok, A[s[0]].total) + '% acertaram' : '';
+        if (!off) prev = n;
+        return '<div class="frow"><div class="lb">' + esc(s[1]) + '<small>' + (view ? pct(n, view) + '% de quem abriu' : '') + ans + '</small></div><div class="track"><i class="' + (off ? 'off' : '') + '" style="width:' + (n / maxv * 100) + '%"></i><em>' + n + '</em></div><div class="nm">' + (drop != null && drop > 0 ? '<span class="drop">−' + drop + '% saíram</span>' : '<span class="mut">—</span>') + '</div></div>';
+      }).join('');
+      var ads = (d.ads || []).filter(function (a) { return a.views || a.starts; });
+      m.innerHTML = '<h1>Funil do quiz</h1><p class="sub">Até onde as pessoas vão e onde param. Cada pessoa conta uma vez por etapa (por visita).</p>' +
+        '<div class="bar"><button class="chip" data-q="desafio">Desafio (/ e /j/)</button><button class="chip" data-q="diagnostico">Diagnóstico (/j/quiz/)</button><span style="width:10px"></span>' +
+        '<button class="chip" data-p="hoje">Hoje</button><button class="chip" data-p="7">7 dias</button><button class="chip" data-p="30">30 dias</button><button class="chip" data-p="tudo">Tudo</button><button class="chip" id="rf">↻ Atualizar</button></div>' +
+        '<div class="kpis"><div class="kpi"><span>Abriram</span><b>' + view + '</b><small>visitas na página</small></div>' +
+        '<div class="kpi"><span>Começaram</span><b>' + start + '</b><small>' + pct(start, view) + '% de quem abriu</small></div>' +
+        '<div class="kpi"><span>Chegaram ao resultado</span><b>' + result + '</b><small>' + pct(result, start) + '% de quem começou</small></div>' +
+        '<div class="kpi"><span>Clicaram para comprar</span><b>' + buy + '</b><small>' + pct(buy, result) + '% de quem viu o resultado</small></div>' +
+        '<div class="kpi"><span>Vendas aprovadas</span><b>' + sales + '</b><small>no período, todas as páginas</small></div></div>' +
+        '<div class="card"><h2>Etapa por etapa</h2><p class="h2s">A barra mostra quantas pessoas chegaram em cada etapa. Em vermelho, quantas saíram em relação à etapa anterior: é aí que vale mexer.</p><div class="fun">' + (view ? rows : '<div class="empty">Ainda não há visitas registradas neste período.</div>') + '</div></div>' +
+        '<div class="card"><h2>Por anúncio</h2><p class="h2s">Pelo utm_content do link do anúncio.</p><div class="tw"><table><thead><tr><th>Anúncio</th><th>Abriram</th><th>Começaram</th><th>Resultado</th><th>Clicaram comprar</th><th>Abriu → clicou</th></tr></thead><tbody>' +
+        (ads.length ? ads.map(function (a) { return '<tr><td>' + esc(a.ad) + '</td><td>' + a.views + '</td><td>' + a.starts + ' <span class="mut">(' + pct(a.starts, a.views) + '%)</span></td><td>' + a.results + '</td><td>' + a.clicks + '</td><td><b>' + pct(a.clicks, a.views) + '%</b></td></tr>'; }).join('') : '<tr><td colspan="6" class="empty">Sem dados no período.</td></tr>') +
+        '</tbody></table></div></div>';
+      document.querySelectorAll('[data-q]').forEach(function (b) { b.classList.toggle('on', b.dataset.q === QZ); b.onclick = function () { QZ = b.dataset.q; draw(); }; });
+      document.querySelectorAll('[data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === PER); b.onclick = function () { PER = b.dataset.p; draw(); }; });
+      document.getElementById('rf').onclick = function () { C = null; draw(); };
+    });
+  }
+
+  // ---------------- webhooks ----------------
+  function vendas(m, d) {
+    m.innerHTML = '<h1>Webhooks do Digital Hub</h1><p class="sub">Os últimos 40 avisos de venda que chegaram e o que o sistema liberou.</p><div class="card"><div class="tw"><table><thead><tr><th>Quando</th><th>E-mail</th><th>Status</th><th>Resultado</th></tr></thead><tbody>' +
+      ((d.events || []).map(function (e) { return '<tr><td>' + dt(e.created_at) + '</td><td>' + esc(e.email || '—') + '</td><td><span class="tag ' + (e.status === 'paid' ? 'g' : e.status === 'pending' ? 'y' : 'r') + '">' + esc(e.status) + '</span></td><td class="mut">' + esc(e.result) + '</td></tr>'; }).join('') || '<tr><td colspan="4" class="empty">Nada ainda.</td></tr>') +
+      '</tbody></table></div></div>';
+  }
+
+  if (key) api('check').then(boot).catch(function () { login(); }); else login();
+})();
+</script>
+</body>
+</html>

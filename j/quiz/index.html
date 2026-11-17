@@ -24,8 +24,8 @@
 <footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
 <script src="/j/qz/depoimentos.js?v=1"></script>
-<script src="/j/qz/fx.js?v=1"></script>
-<script src="/j/qz/oferta.js?v=5"></script>
+<script src="/j/qz/fx.js?v=2"></script>
+<script src="/j/qz/oferta.js?v=6"></script>
 <script>
 (function () {
   'use strict';
@@ -54,6 +54,7 @@
   var started = false;
   var X = window.PFX, EARN = { resp: 0, teste: 0, plano: 0 };
   var wl = document.getElementById('wl'); X.wallet(wl.parentNode); X.muteButton(wl.parentNode); wl.remove();
+  var EV = window.PFQ.ev; window.PFQ.init('diagnostico');
 
   function progress() {
     var done = Q.slice(0, i).filter(function (q) { return q.id; }).length;
@@ -74,7 +75,7 @@
       '<p class="center" style="margin-top:12px;font-size:13px;color:#8F9BB8">Sem cadastro · resultado na hora</p>' +
       '<div style="margin-top:16px;display:flex;gap:10px;align-items:center;justify-content:center;background:rgba(214,180,103,.12);border:1px dashed rgba(214,180,103,.5);border-radius:14px;padding:10px 12px;font-size:14.5px;color:var(--gold2);font-weight:700"><span style="font-size:20px">💰</span>Cada resposta vale um bônus. Vá juntando até o final.</div></div>' +
       '<div class="card" style="margin-top:16px;display:flex;gap:14px;align-items:center"><span style="font-size:30px">🔑</span><p style="font-size:15px;color:var(--ink2)">Feito a partir do <b style="color:var(--ink)">Método do Verbo-Chave</b>: cada crime do Código Penal tem um verbo que o diferencia dos outros.</p></div></div>';
-    document.getElementById('go').onclick = function () { X.play('select'); started = true; window.PFOffer.trackCustom('QuizStart', { quiz: 'diagnostico' }); go(0); };
+    document.getElementById('go').onclick = function () { X.play('select'); EV('start'); started = true; window.PFOffer.trackCustom('QuizStart', { quiz: 'diagnostico' }); go(0); };
   }
 
   function show() {
@@ -87,6 +88,7 @@
     st.querySelectorAll('.opt').forEach(function (b) {
       b.onclick = function () {
         var first = A[q.id] === undefined;
+        EV(q.id, q.quiz ? { ok: b.dataset.v === q.quiz } : { v: b.dataset.v });
         A[q.id] = b.dataset.v;
         if (!q.quiz) { b.classList.add('sel'); X.play('select'); if (first) gain('resp', 0.5, b); setTimeout(function () { go(i + 1); }, first ? 650 : 260); return; }
         st.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; if (x.dataset.v === q.quiz) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
@@ -117,12 +119,13 @@
     st.innerHTML = '<div class="screen q"><span class="kicker">Última etapa</span><h2>Como você quer que o seu plano seja chamado?</h2><p class="help">Opcional. Só para personalizar o seu resultado.</p>' +
       '<input id="nm" maxlength="30" autocomplete="given-name" placeholder="Seu primeiro nome" style="width:100%;margin-top:20px;padding:16px;border-radius:14px;border:2px solid var(--line);font:inherit;font-size:17px">' +
       '<button class="btn gold block" id="nx" style="margin-top:14px">Ver meu diagnóstico</button><button class="muted" id="sk" style="display:block;margin:12px auto 0;text-decoration:underline">Pular</button></div>';
-    var f = function () { A.nome = (document.getElementById('nm').value || '').trim().split(/\s+/)[0].slice(0, 20); X.play('select'); if (!EARN.plano) gain('plano', 0.5, document.getElementById('nx')); setTimeout(function () { go(i + 1); }, 600); };
-    document.getElementById('nx').onclick = f; document.getElementById('sk').onclick = function () { A.nome = ''; X.play('tap'); go(i + 1); };
+    var f = function () { A.nome = (document.getElementById('nm').value || '').trim().split(/\s+/)[0].slice(0, 20); EV('name', { filled: !!A.nome }); X.play('select'); if (!EARN.plano) gain('plano', 0.5, document.getElementById('nx')); setTimeout(function () { go(i + 1); }, 600); };
+    document.getElementById('nx').onclick = f; document.getElementById('sk').onclick = function () { EV('name', { filled: false }); A.nome = ''; X.play('tap'); go(i + 1); };
     document.getElementById('nm').onkeydown = function (e) { if (e.key === 'Enter') f(); };
   }
 
   function analyze() {
+    EV('analyze');
     pb.style.width = '100%'; pt.textContent = 'Analisando'; back.classList.remove('on');
     var c = CAR[A.car] || 'sua prova';
     var steps = ['Analisando suas 11 respostas', 'Comparando com os crimes mais cobrados em ' + c, 'Medindo o risco de confundir verbos', 'Montando seu plano de ' + (A.hrs === '120' ? '2 horas' : A.hrs === '60' ? '1 hora' : (A.hrs || '30') + ' minutos') + ' por dia'];
@@ -138,6 +141,7 @@
 
   function result() {
     pt.textContent = 'Seu resultado';
+    EV('result', { risco: nivel[0], acertos: hits });
     window.PFOffer.trackCustom('QuizComplete', { quiz: 'diagnostico', carreira: A.car, prazo: A.prz });
     // risco: prazo curto, estudo passivo, confusão entre crimes e erro no teste aumentam
     var r = 0;

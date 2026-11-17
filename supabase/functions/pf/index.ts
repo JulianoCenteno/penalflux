@@ -6,6 +6,8 @@
 //   GET  /me                conteúdo liberado para a sessão (header x-pf-token)
 //   GET  /pdf?f=especiais   link temporário do PDF
 //   POST /logout
+//   POST /qe                etapa do funil dos quizzes (sem login)
+//   GET  /admin/...         painel do admin (header x-pf-admin com a chave de pf_settings.admin_key)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const db = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!, {
@@ -17,14 +19,14 @@ const SESSION_DAYS = 180;
 
 const CORS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "content-type, x-pf-token",
+  "Access-Control-Allow-Headers": "content-type, x-pf-token, x-pf-admin",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
 };
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { ...CORS, "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 
 const norm = (s: unknown) =>
-  String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9@._+-]+/g, " ").trim();
+  String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9@._+-]+/g, " ").trim();
 const normEmail = (s: unknown) => String(s ?? "").trim().toLowerCase();
 const firstName = (s: unknown) => norm(s).replace(/[^a-z ]/g, " ").trim().split(/\s+/)[0] || "";
 
@@ -212,6 +214,15 @@ async function access(email: string) {
   return { owned: expand(paid.flatMap((r) => r.products as string[])), names: paid.map((r) => r.name).filter(Boolean) as string[] };
 }
 
+// registro do que o comprador faz no app (painel do admin)
+async function act(email: string, kind: string, detail: Record<string, unknown> = {}) {
+  try { await db.from("pf_activity").insert({ email, kind, detail }); } catch (_) { /* não trava o app */ }
+}
+const device = (req: Request) => {
+  const ua = req.headers.get("user-agent") || "";
+  return /iphone|ipad/i.test(ua) ? "iPhone" : /android/i.test(ua) ? "Android" : /windows/i.test(ua) ? "Windows" : /mac os/i.test(ua) ? "Mac" : "outro";
+};
+
 async function login(req: Request) {
   const body = await req.json().catch(() => ({}));
   const email = normEmail(body.email);
@@ -223,11 +234,15 @@ async function login(req: Request) {
     return json({ error: "Muitas tentativas. Espere 15 minutos e tente de novo." }, 429);
 
   const acc = await access(email);
-  if (!acc.owned.length)
+  if (!acc.owned.length) {
+    await act(email, "login_fail", { motivo: "sem compra aprovada", nome: name.slice(0, 40), aparelho: device(req) });
     return json({ error: "Não encontramos uma compra aprovada com esse e-mail. Use o mesmo e-mail da compra. No Pix, a liberação leva até alguns minutos." }, 404);
+  }
   const fn = firstName(name);
-  if (acc.names.length && !acc.names.some((n) => firstName(n) === fn))
+  if (acc.names.length && !acc.names.some((n) => firstName(n) === fn)) {
+    await act(email, "login_fail", { motivo: "nome não confere", nome: name.slice(0, 40), aparelho: device(req) });
     return json({ error: "O nome não confere com o da compra. Digite o primeiro nome como você colocou no pedido." }, 403);
+  }
 
   const raw = crypto.getRandomValues(new Uint8Array(32));
   const token = [...raw].map((x) => x.toString(16).padStart(2, "0")).join("");
@@ -236,6 +251,7 @@ async function login(req: Request) {
   const { data: ss } = await db.from("pf_sessions").select("token_hash").eq("email", email).order("created_at", { ascending: false });
   const old = (ss || []).slice(MAX_DEVICES).map((s) => s.token_hash);
   if (old.length) await db.from("pf_sessions").delete().in("token_hash", old);
+  await act(email, "login", { aparelho: device(req) });
   return json({ token });
 }
 
@@ -249,9 +265,10 @@ async function session(req: Request) {
     await db.from("pf_sessions").delete().eq("token_hash", h);
     return null;
   }
-  if (Date.now() - new Date(data.last_seen).getTime() > 36e5)
+  const idle = Date.now() - new Date(data.last_seen).getTime();
+  if (idle > 30 * 6e4)
     await db.from("pf_sessions").update({ last_seen: new Date().toISOString() }).eq("token_hash", h);
-  return { email: data.email as string, hash: h };
+  return { email: data.email as string, hash: h, idle };
 }
 
 const cache = new Map<string, unknown>();
@@ -276,6 +293,7 @@ async function me(req: Request) {
   const data: Record<string, unknown> = {};
   for (const p of parts) Object.assign(data, await part(p));
   const { data: o } = await db.from("pf_orders").select("name").eq("email", s.email).not("name", "is", null).limit(1);
+  if (s.idle > 30 * 6e4) await act(s.email, "app", { aparelho: device(req) });
   return json({ user: { email: s.email, name: o?.[0]?.name || "", owned: acc.owned }, data });
 }
 
@@ -293,6 +311,7 @@ async function pdf(req: Request, url: URL) {
   if (!acc.owned.includes(f[1])) return json({ error: "Este material não está no seu plano." }, 403);
   const { data, error } = await db.storage.from(BUCKET).createSignedUrl(f[0], 120, { download: f[2] });
   if (error || !data) return json({ error: "Não foi possível gerar o link agora." }, 500);
+  await act(s.email, "pdf", { f: url.searchParams.get("f") });
   return json({ url: data.signedUrl });
 }
 
@@ -302,7 +321,61 @@ async function logout(req: Request) {
   return json({ ok: true });
 }
 
+// ---------- Funil dos quizzes ----------
+const QUIZZES = ["desafio", "diagnostico"];
+const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+async function quizEvent(req: Request) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "?";
+  let b: Record<string, unknown> = {};
+  try { b = JSON.parse(await req.text()); } catch { return json({ ok: false }, 400); }
+  const sid = String(b.sid || ""), quiz = String(b.quiz || ""), step = String(b.step || "");
+  if (!/^[a-z0-9]{8,40}$/.test(sid) || !QUIZZES.includes(quiz) || !/^[a-z0-9_]{1,40}$/.test(step)) return json({ ok: false }, 400);
+  if (!(await hit("qe:" + ip, 400, 15))) return json({ ok: false }, 429);
+  const data = b.data && typeof b.data === "object" && JSON.stringify(b.data).length < 600 ? b.data : null;
+  const utm: Record<string, string> = {};
+  const u = (b.utm || {}) as Record<string, unknown>;
+  for (const k of UTM_KEYS) if (u[k]) utm[k] = String(u[k]).slice(0, 200);
+  await db.from("pf_quiz_events").insert({ sid, quiz, step, data, path: String(b.path || "").slice(0, 200), utm: Object.keys(utm).length ? utm : null });
+  return json({ ok: true });
+}
 
+// ---------- Painel do admin ----------
+async function admin(req: Request, url: URL, route: string) {
+  const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "?";
+  const real = await setting("admin_key");
+  const given = req.headers.get("x-pf-admin") || "";
+  if (!real || !safeEqual(await sha256(given), await sha256(real))) {
+    if (!(await hit("adm:" + ip, 10, 15))) return json({ error: "Muitas tentativas. Espere 15 minutos." }, 429);
+    return json({ error: "Chave inválida." }, 401);
+  }
+  if (route === "/admin/check") return json({ ok: true });
+  if (route === "/admin/customers") {
+    const { data, error } = await db.rpc("pf_admin_customers");
+    if (error) throw new Error(error.message);
+    const { data: fails } = await db.from("pf_activity").select("at, email, detail").eq("kind", "login_fail").order("at", { ascending: false }).limit(40);
+    return json({ customers: data, fails: fails || [] });
+  }
+  if (route === "/admin/activity") {
+    const email = normEmail(url.searchParams.get("email"));
+    const { data } = await db.from("pf_activity").select("at, kind, detail").eq("email", email).order("at", { ascending: false }).limit(100);
+    const { data: ss } = await db.from("pf_sessions").select("ua, created_at, last_seen").eq("email", email);
+    const { data: oo } = await db.from("pf_orders").select("id, status, products, amount, created_at").eq("email", email);
+    return json({ activity: data || [], sessions: ss || [], orders: oo || [] });
+  }
+  if (route === "/admin/funnel") {
+    const quiz = url.searchParams.get("quiz") || "desafio";
+    const from = url.searchParams.get("from") || new Date(Date.now() - 7 * 864e5).toISOString();
+    const to = url.searchParams.get("to") || new Date(Date.now() + 6e4).toISOString();
+    const { data, error } = await db.rpc("pf_quiz_funnel", { p_quiz: quiz, p_from: from, p_to: to });
+    if (error) throw new Error(error.message);
+    return json(data);
+  }
+  if (route === "/admin/webhooks") {
+    const { data } = await db.from("pf_events").select("created_at, email, status, result").order("created_at", { ascending: false }).limit(40);
+    return json({ events: data || [] });
+  }
+  return json({ error: "rota não encontrada" }, 404);
+}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -314,6 +387,8 @@ Deno.serve(async (req) => {
     if (route === "/me") return await me(req);
     if (route === "/pdf") return await pdf(req, url);
     if (route === "/logout" && req.method === "POST") return await logout(req);
+    if (route === "/qe" && req.method === "POST") return await quizEvent(req);
+    if (route.startsWith("/admin/")) return await admin(req, url, route);
     return json({ error: "rota não encontrada" }, 404);
   } catch (e) {
     console.error(e);

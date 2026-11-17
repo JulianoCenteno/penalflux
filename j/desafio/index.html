@@ -58,8 +58,8 @@ footer{color:#5E6B88}
 <footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
 <script src="/j/qz/depoimentos.js?v=1"></script>
-<script src="/j/qz/fx.js?v=1"></script>
-<script src="/j/qz/oferta.js?v=5"></script>
+<script src="/j/qz/fx.js?v=2"></script>
+<script src="/j/qz/oferta.js?v=6"></script>
 <script>
 (function () {
   'use strict';
@@ -80,6 +80,7 @@ footer{color:#5E6B88}
   var i = 0, streak = 0, best = 0, res = [], timer = null, left = TIME;
   var X = window.PFX, EARN = { acerto: 0, rapido: 0, seq: 0 };
   var wl = document.getElementById('wl'); X.wallet(wl.parentNode); X.muteButton(wl.parentNode); wl.remove();
+  var EV = window.PFQ.ev; window.PFQ.init('desafio');
 
   function intro() {
     pb.style.width = '2%';
@@ -89,7 +90,7 @@ footer{color:#5E6B88}
       '<p style="color:#C3CBDD;margin-top:12px;font-size:17px">10 casos que caem em prova. Cada acerto vale bônus 💰: acerte rápido e em sequência para juntar mais, e descubra a sua patente no fim.</p>' +
       '<div class="stats" style="margin-top:22px"><div><b>' + C.length + '</b><span>casos</span></div><div><b>' + TIME + 's</b><span>por caso</span></div><div><b>3</b><span>níveis</span></div></div>' +
       '<button class="btn gold block" id="go" style="margin-top:22px">Começar o desafio</button><p style="margin-top:12px;font-size:13px;color:#8F9BB8">Grátis · sem cadastro · 3 minutos</p></div>';
-    document.getElementById('go').onclick = function () { X.play('select'); window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); play(); };
+    document.getElementById('go').onclick = function () { X.play('select'); EV('start'); window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); play(); };
   }
 
   function hud() {
@@ -126,6 +127,7 @@ footer{color:#5E6B88}
   function answer(k) {
     clearInterval(timer);
     var c = C[i], ok = k === c.a, gained = 0;
+    EV('c' + (i + 1), { ok: ok, t: TIME - Math.max(0, left) });
     st.querySelectorAll('.opt').forEach(function (x, j) { x.disabled = true; if (j === c.a) x.classList.add('right'); else if (j === k) x.classList.add('wrong'); });
     if (ok) {
       streak++; best = Math.max(best, streak);
@@ -162,7 +164,7 @@ footer{color:#5E6B88}
       '<p style="color:#C3CBDD;margin-top:10px">' + txt + '</p>' +
       '<div class="stats"><div><b>' + ok + '/' + i + '</b><span>acertos</span></div><div><b style="font-size:24px">' + X.brl(X.total) + '</b><span>bônus juntado</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
       '<button class="btn gold block" id="nx" style="margin-top:22px">Continuar</button></div>';
-    X.play('level'); X.buzz([20, 30, 20]);
+    X.play('level'); X.buzz([20, 30, 20]); EV(i === C.length - 1 ? 'boss' : 'lvl2');
     document.getElementById('nx').onclick = function () { X.play('tap'); play(); };
   }
 
@@ -175,6 +177,7 @@ footer{color:#5E6B88}
       : ok >= 4 ? ['🛡️', 'Agente', 'Você já acerta parte dos casos, mas os crimes parecidos ainda te confundem. É aí que se perdem pontos.']
       : ['🎖️', 'Recruta', 'Os crimes parecidos ainda se misturam. A boa notícia: com o verbo-chave, cada um passa a ter uma regra de uma frase.'];
     window.PFOffer.trackCustom('QuizComplete', { quiz: 'desafio', acertos: ok });
+    EV('result', { acertos: ok });
     var miss = res.filter(function (r) { return !r.ok; });
     st.innerHTML = '<div class="screen"><div class="center"><div class="badge-big">' + R[0] + '</div>' +
       '<span class="kicker" style="display:block;margin-top:20px">Sua patente</span><h1 style="font-size:clamp(32px,8vw,42px);margin-top:6px">' + R[1] + '</h1>' +

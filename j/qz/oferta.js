@@ -27,6 +27,7 @@
   var px = function (name, data) { try { if (window.fbq) window.fbq('track', name, data || {}); } catch (e) {} };
   var pxc = function (name, data) { try { if (window.fbq) window.fbq('trackCustom', name, data || {}); } catch (e) {} };
   var fx = function (n, a) { if (window.PFX) window.PFX.play(n, a); };
+  var ev = function (s, d) { if (window.PFQ) window.PFQ.ev(s, d); };
 
   var IMG = '/j/qz/app/';
   // bônus que vêm no Completo (telas reais do app)
@@ -110,16 +111,18 @@
     bar.className = 'stick'; bar.innerHTML = '<div><b>Completo por R$ 29,90</b><span>Pagamento único, garantia de 7 dias</span></div><a class="btn gold" href="#deal">Quero</a>';
     document.body.appendChild(bar);
     var deal = el.querySelector('#deal');
+    if ('IntersectionObserver' in window) { var io2 = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { io2.disconnect(); ev('offer_view'); } }, { threshold: 0.3 }); io2.observe(deal); }
     var onScroll = function () { var r = deal.getBoundingClientRect(); bar.classList.toggle('show', innerWidth < 760 && !(r.bottom > 0 && r.top < innerHeight)); };
     addEventListener('scroll', onScroll, { passive: true });
     bar.querySelector('a').onclick = function (e) { e.preventDefault(); fx('tap'); deal.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-    el.querySelector('a[data-ck="completo"]').addEventListener('click', function () { fx('select'); px('InitiateCheckout', { currency: 'BRL', value: 29.9, content_name: 'PenalFlux Completo' }); });
+    el.querySelector('a[data-ck="completo"]').addEventListener('click', function () { ev('click_completo'); fx('select'); px('InitiateCheckout', { currency: 'BRL', value: 29.9, content_name: 'PenalFlux Completo' }); });
 
     // Básico: lembra que o bônus só vale no Completo
     var bas = el.querySelector('a[data-ck="basico"]');
     bas.addEventListener('click', function (e) {
-      if (sessionStorage.getItem('pf_up_seen')) { px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); return; }
+      if (sessionStorage.getItem('pf_up_seen')) { ev('click_basico_direto'); px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); return; }
+      ev('click_basico');
       e.preventDefault(); fx('tap'); try { sessionStorage.setItem('pf_up_seen', '1'); } catch (_) {}
       var m = document.getElementById('modal');
       m.innerHTML = '<div class="up"><span class="tag">💰 Use seus ' + brl(B) + ' de bônus</span><h3>Espera! Leve o Completo por quase o preço do Básico</h3>' +
@@ -129,8 +132,8 @@
         '<a class="btn go block" id="upyes" href="' + link(CK.bonus, s.afi) + '">Usar meu bônus: Completo por ' + brl(29.9 - B) + '</a><button class="no" id="upno">Não, quero só o Básico por R$ 10,90</button></div>';
       fx('level');
       document.getElementById('scrim').classList.add('show');
-      document.getElementById('upyes').onclick = function () { px('InitiateCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); };
-      document.getElementById('upno').onclick = function () { px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); location.href = dec(bas.href); };
+      document.getElementById('upyes').onclick = function () { ev('popup_yes'); px('InitiateCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); };
+      document.getElementById('upno').onclick = function () { ev('popup_no'); px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); location.href = dec(bas.href); };
     }, true);
     // celular animado
     var imgs = el.querySelectorAll('.phone .scr img');
@@ -157,7 +160,7 @@
     // contagem do bônus
     var vb = el.querySelector('#vb'), started = false;
     var count = function () {
-      if (started) return; started = true;
+      if (started) return; started = true; ev('bonus_view');
       var t0 = null, D = 1600;
       fx('roll', 14);
       requestAnimationFrame(function step(ts) {

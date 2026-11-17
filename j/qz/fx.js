@@ -78,5 +78,26 @@
   function rest() { return Math.round((GOAL - W.total) * 100) / 100; }
   function fill(label, from) { return earn(rest(), label, from); }
 
+  // funil do quiz: cada etapa vai para /api/qe (painel do admin). Uma visita = um sid.
+  var Q = { quiz: '', sid: '', utm: {} };
+  (function () {
+    var a = new Uint8Array(10); (window.crypto || window.msCrypto).getRandomValues(a);
+    Q.sid = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(36)).slice(-2); }).join('').replace(/[^a-z0-9]/g, '').slice(0, 20) || String(Date.now());
+    var p = new URLSearchParams(location.search), keep = {};
+    ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (p.get(k)) keep[k] = p.get(k); });
+    try { if (Object.keys(keep).length) sessionStorage.setItem('pf_utm', JSON.stringify(keep)); Q.utm = JSON.parse(sessionStorage.getItem('pf_utm') || '{}'); } catch (e) { Q.utm = keep; }
+  })();
+  var sent = {};
+  function ev(step, data, once) {
+    if (!Q.quiz) return;
+    if (once !== false && sent[step]) return; sent[step] = 1;
+    var body = JSON.stringify({ sid: Q.sid, quiz: Q.quiz, step: step, data: data || null, path: location.pathname, utm: Q.utm });
+    try { if (navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'text/plain' }))) return; } catch (e) {}
+    try { fetch('/api/qe', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }); } catch (e) {}
+  }
+  function init(quiz) { Q.quiz = quiz; ev('view'); }
+
+  window.PFQ = { init: init, ev: ev };
+
   window.PFX = { play: play, buzz: buzz, muteButton: muteButton, wallet: wallet, earn: earn, fill: fill, rest: rest, brl: brl, GOAL: GOAL, get total() { return W.total; } };
 })();
