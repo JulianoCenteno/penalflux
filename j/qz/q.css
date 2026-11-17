@@ -110,3 +110,35 @@ h1,h2,h3.serif{font-family:var(--serif);font-weight:400;letter-spacing:-.2px;lin
 .up .px small{color:var(--ink2);font-size:13px;font-weight:700}
 .up .no{display:block;margin:14px auto 0;color:var(--ink3);font-size:14px;text-decoration:underline}
 footer{max-width:620px;margin:0 auto;padding:0 18px 40px;font-size:12px;color:var(--ink3);text-align:center}
+
+/* som e carteira */
+.mute{font-size:18px;line-height:1;padding:6px;border-radius:10px;flex:none}
+.mute:hover{background:rgba(255,255,255,.08)}
+.wallet{display:flex;align-items:center;gap:6px;background:rgba(214,180,103,.14);border:1px solid rgba(214,180,103,.45);color:var(--gold2);border-radius:99px;padding:5px 11px;font-weight:800;font-size:14px;white-space:nowrap;flex:none}
+.wallet .wi{font-size:15px}
+.wallet.pop{animation:wpop .5s ease}
+@keyframes wpop{0%{transform:scale(1)}35%{transform:scale(1.22);background:rgba(214,180,103,.35)}100%{transform:scale(1)}}
+.earn{position:absolute;transform:translateX(-50%);z-index:60;pointer-events:none;background:linear-gradient(180deg,#F3DC9B,#C9A24A);color:var(--navy);font-weight:800;font-size:15px;padding:7px 13px;border-radius:99px;box-shadow:0 10px 26px -8px rgba(184,145,58,.8);white-space:nowrap;animation:earn 1.3s ease forwards}
+@keyframes earn{0%{opacity:0;margin-top:0;transform:translateX(-50%) scale(.7)}18%{opacity:1;transform:translateX(-50%) scale(1.05)}70%{opacity:1;margin-top:-60px;transform:translateX(-50%) scale(1)}100%{opacity:0;margin-top:-90px}}
+@media (max-width:420px){.qlogo b{display:none}}
+
+/* final: revelação do bônus */
+.vault{background:radial-gradient(600px 300px at 50% 0,#2A3F78,transparent 70%),var(--navy);color:#fff;border-radius:24px;padding:26px 20px;text-align:center;border:1px solid rgba(214,180,103,.35);position:relative;overflow:hidden}
+.vault .big{font-family:var(--serif);font-size:62px;line-height:1;color:var(--gold2);margin-top:8px;text-shadow:0 8px 40px rgba(214,180,103,.35)}
+.vault p{color:#C3CBDD;font-size:15.5px;margin-top:8px}
+.vault .lines{margin:16px auto 0;max-width:360px;text-align:left;display:grid;gap:6px;font-size:14.5px}
+.vault .lines div{display:flex;justify-content:space-between;color:#C3CBDD;border-bottom:1px dashed rgba(255,255,255,.12);padding-bottom:5px}
+.vault .lines b{color:#fff}
+.deal{background:#fff;border:2px solid var(--gold);border-radius:22px;padding:20px;margin-top:16px;box-shadow:0 24px 50px -30px rgba(14,26,51,.6)}
+.deal .row{display:flex;justify-content:space-between;align-items:baseline;font-size:15.5px;padding:6px 0;color:var(--ink2)}
+.deal .row.b{color:var(--green);font-weight:800}
+.deal .row s{color:var(--ink3)}
+.deal .tot{display:flex;justify-content:space-between;align-items:baseline;border-top:1px solid var(--line);margin-top:6px;padding-top:12px}
+.deal .tot b{font-family:var(--serif);font-weight:400;font-size:46px;line-height:1}
+.how{display:grid;gap:10px;margin-top:18px}
+.how div{display:flex;gap:12px;align-items:center;background:#fff;border-radius:14px;padding:12px 14px;font-size:15px}
+.how i{width:30px;height:30px;border-radius:50%;background:var(--goldbg);color:#8E6C24;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;flex:none}
+.stick{position:fixed;left:0;right:0;bottom:0;z-index:40;background:rgba(14,26,51,.97);backdrop-filter:blur(8px);padding:10px 14px calc(10px + env(safe-area-inset-bottom));display:none;align-items:center;justify-content:space-between;gap:12px;color:#fff;border-top:1px solid rgba(214,180,103,.3)}
+.stick.show{display:flex}
+.stick b{font-size:15px}.stick span{display:block;font-size:12.5px;color:#AEB8CF}
+.stick .btn{padding:12px 18px;font-size:15px}

@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/j/qz/q.css?v=1">
+<link rel="stylesheet" href="/j/qz/q.css?v=2">
 <style>
 body{background:var(--navy)}
 .qtop{border-bottom:1px solid rgba(214,180,103,.18)}
@@ -52,11 +52,13 @@ footer{color:#5E6B88}
 <header class="qtop"><div class="in">
   <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg><b style="font-weight:400">Penal<span>Flux</span></b></div>
   <div class="prog"><small id="pt">Desafio do Verbo-Chave</small><div class="bar"><i id="pb"></i></div></div>
+  <span id="wl"></span>
 </div></header>
 <main class="stage" id="stage"></main>
 <footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
-<script src="/j/qz/oferta.js?v=1"></script>
+<script src="/j/qz/fx.js?v=1"></script>
+<script src="/j/qz/oferta.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -71,21 +73,23 @@ footer{color:#5E6B88}
     { lvl: 'Chefão · A pegadinha das bancas', s: 'Irritado, João escreve no grupo do trabalho que o colega Pedro “é um ladrão”, sem contar nenhum fato.', o: [['Calúnia', 'art. 138'], ['Difamação', 'art. 139'], ['Injúria', 'art. 140']], a: 2, vb: 'ofender a dignidade', e: 'Chamar alguém de ladrão, sem apontar um fato concreto, é <b>injúria</b>: ofende a dignidade. Calúnia exige <b>imputar falsamente um fato</b> definido como crime (“ele furtou o celular da Maria ontem”).' }
   ];
   var st = document.getElementById('stage'), pb = document.getElementById('pb'), pt = document.getElementById('pt');
-  var i = 0, score = 0, streak = 0, best = 0, res = [], timer = null, left = TIME;
+  var i = 0, streak = 0, best = 0, res = [], timer = null, left = TIME;
+  var X = window.PFX, EARN = { acerto: 0, rapido: 0, seq: 0 };
+  var wl = document.getElementById('wl'); X.wallet(wl.parentNode); X.muteButton(wl.parentNode); wl.remove();
 
   function intro() {
     pb.style.width = '2%';
     st.innerHTML = '<div class="screen center"><div class="badge-big">🔑</div>' +
       '<span class="kicker" style="display:block;margin-top:22px">Desafio do Verbo-Chave</span>' +
       '<h1 style="font-size:clamp(32px,8vw,44px);margin-top:8px">Você reconhece o crime <span style="color:var(--gold2)">pelo verbo</span>?</h1>' +
-      '<p style="color:#C3CBDD;margin-top:12px;font-size:17px">7 casos que caem em prova. Acerte rápido para ganhar mais pontos, faça sequência e descubra a sua patente no fim.</p>' +
+      '<p style="color:#C3CBDD;margin-top:12px;font-size:17px">7 casos que caem em prova. Cada acerto vale bônus 💰: acerte rápido e em sequência para juntar mais, e descubra a sua patente no fim.</p>' +
       '<div class="stats" style="margin-top:22px"><div><b>7</b><span>casos</span></div><div><b>' + TIME + 's</b><span>por caso</span></div><div><b>3</b><span>níveis</span></div></div>' +
       '<button class="btn gold block" id="go" style="margin-top:22px">Começar o desafio</button><p style="margin-top:12px;font-size:13px;color:#8F9BB8">Grátis · sem cadastro · 2 minutos</p></div>';
-    document.getElementById('go').onclick = function () { window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); play(); };
+    document.getElementById('go').onclick = function () { X.play('select'); window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); play(); };
   }
 
   function hud() {
-    return '<div class="hud"><span class="chip">Caso ' + (i + 1) + '/7</span><span class="chip ' + (streak >= 2 ? 'hot' : '') + '">🔥 ' + streak + '</span><span class="chip">⭐ ' + score + '</span></div>';
+    return '<div class="hud"><span class="chip">Caso ' + (i + 1) + '/7</span><span class="chip">' + res.filter(function (r) { return r.ok; }).length + ' acertos</span><span class="chip ' + (streak >= 2 ? 'hot' : '') + '">🔥 ' + streak + '</span></div>';
   }
 
   function play() {
@@ -100,7 +104,7 @@ footer{color:#5E6B88}
     clearInterval(timer);
     timer = setInterval(function () {
       left--; ti.style.width = Math.max(0, left / TIME * 100) + '%';
-      if (left <= 7) tm.classList.add('low');
+      if (left <= 7) { tm.classList.add('low'); if (left > 0) X.play('tick'); }
       if (left <= 0) { clearInterval(timer); answer(-1); }
     }, 1000);
     window.scrollTo(0, 0);
@@ -121,18 +125,24 @@ footer{color:#5E6B88}
     st.querySelectorAll('.opt').forEach(function (x, j) { x.disabled = true; if (j === c.a) x.classList.add('right'); else if (j === k) x.classList.add('wrong'); });
     if (ok) {
       streak++; best = Math.max(best, streak);
-      gained = 100 + Math.max(0, left) * 4 + (streak >= 2 ? (streak - 1) * 50 : 0);
-      score += gained;
-      var p = document.createElement('div'); p.className = 'pts'; p.textContent = '+' + gained; document.body.appendChild(p); setTimeout(function () { p.remove(); }, 1000);
-      burst();
-    } else { streak = 0; document.getElementById('cs').classList.add('shake'); }
+      X.play('right'); X.buzz(30); burst();
+      var btn = st.querySelectorAll('.opt')[c.a];
+      // acerto R$ 1,00 · rápido (15 s ou mais sobrando) + R$ 0,50 · sequência de 3 ou mais + R$ 0,50 (o teto deixa espaço para o bônus de conclusão)
+      var cap = function (v) { return Math.max(0, Math.min(v, 9 - X.total)); };
+      var a1 = cap(1), a2 = left >= 15 ? cap(1 + 0.5) - a1 : 0, a3 = streak >= 3 ? cap(a1 + a2 + 0.5) - a1 - a2 : 0;
+      a2 = Math.max(0, Math.round(a2 * 100) / 100); a3 = Math.max(0, Math.round(a3 * 100) / 100);
+      gained = a1 + a2 + a3;
+      EARN.acerto += X.earn(a1, '', btn); EARN.rapido += a2; EARN.seq += a3;
+      if (a2 + a3 > 0) setTimeout(function () { X.earn(a2 + a3, a3 ? 'sequência' : 'rápido', document.getElementById('cs')); }, 450);
+    } else { streak = 0; X.play('wrong'); X.buzz([40, 60, 40]); document.getElementById('cs').classList.add('shake'); }
     res.push({ ok: ok, c: c });
     var last = i === C.length - 1;
     document.getElementById('ex').innerHTML = '<div class="exp"><b style="color:' + (ok ? 'var(--green)' : 'var(--wine)') + '">' + (ok ? (streak >= 3 ? 'Sequência de ' + streak + '! 🔥' : 'Acertou!') : k < 0 ? 'Tempo esgotado.' : 'Errou, mas agora não erra mais.') + '</b>' +
       '<div style="margin-top:6px;font-size:13px;font-weight:800;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em">Verbo-chave</div><div class="vb">' + c.vb + '</div><p style="color:var(--ink2)">' + c.e + '</p></div>' +
-      '<button class="btn navy block" id="nx" style="margin-top:14px">' + (last ? 'Ver minha patente' : 'Próximo caso') + '</button>';
+      '<button class="btn navy block" id="nx" style="margin-top:14px">' + (last ? 'Ver minha patente e meu bônus' : 'Próximo caso') + '</button>';
     st.querySelector('.hud').outerHTML = hud();
     document.getElementById('nx').onclick = function () {
+      X.play('tap');
       i++;
       if (i >= C.length) return finish();
       if (i === 3) return levelUp('Nível 2 desbloqueado', 'Crimes contra a administração pública', 'Aqui as bancas trocam um verbo e a resposta muda: exigir, solicitar, apropriar-se.');
@@ -146,9 +156,10 @@ footer{color:#5E6B88}
     st.innerHTML = '<div class="screen center" style="padding-top:20px"><div class="badge-big" style="width:110px;height:110px;font-size:46px">' + (i === 6 ? '👑' : '🏛️') + '</div>' +
       '<span class="kicker" style="display:block;margin-top:20px">' + t + '</span><h2 style="font-size:32px;margin-top:6px">' + sub + '</h2>' +
       '<p style="color:#C3CBDD;margin-top:10px">' + txt + '</p>' +
-      '<div class="stats"><div><b>' + ok + '/' + i + '</b><span>acertos</span></div><div><b>' + score + '</b><span>pontos</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
+      '<div class="stats"><div><b>' + ok + '/' + i + '</b><span>acertos</span></div><div><b style="font-size:24px">' + X.brl(X.total) + '</b><span>bônus juntado</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
       '<button class="btn gold block" id="nx" style="margin-top:22px">Continuar</button></div>';
-    document.getElementById('nx').onclick = play;
+    X.play('level'); X.buzz([20, 30, 20]);
+    document.getElementById('nx').onclick = function () { X.play('tap'); play(); };
   }
 
   function finish() {
@@ -158,19 +169,25 @@ footer{color:#5E6B88}
       : ok >= 5 ? ['🕵️', 'Investigador(a)', 'Você reconhece a maioria dos crimes pelo verbo. Os erros mostram exatamente onde a banca vai tentar te pegar.']
       : ok >= 3 ? ['🛡️', 'Agente', 'Você já acerta parte dos casos, mas os crimes parecidos ainda te confundem. É aí que se perdem pontos.']
       : ['🎖️', 'Recruta', 'Os crimes parecidos ainda se misturam. A boa notícia: com o verbo-chave, cada um passa a ter uma regra de uma frase.'];
-    window.PFOffer.trackCustom('QuizComplete', { quiz: 'desafio', acertos: ok, pontos: score });
+    window.PFOffer.trackCustom('QuizComplete', { quiz: 'desafio', acertos: ok });
     var miss = res.filter(function (r) { return !r.ok; });
     st.innerHTML = '<div class="screen"><div class="center"><div class="badge-big">' + R[0] + '</div>' +
       '<span class="kicker" style="display:block;margin-top:20px">Sua patente</span><h1 style="font-size:clamp(32px,8vw,42px);margin-top:6px">' + R[1] + '</h1>' +
       '<div class="dots">' + res.map(function (r) { return '<i class="' + (r.ok ? 'ok' : 'no') + '"></i>'; }).join('') + '</div>' +
-      '<div class="stats"><div><b>' + ok + '/7</b><span>acertos</span></div><div><b>' + score + '</b><span>pontos</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
-      '<p style="color:#C3CBDD;margin-top:16px;font-size:16.5px">' + R[2] + '</p></div>' +
+      '<div class="stats"><div><b>' + ok + '/7</b><span>acertos</span></div><div><b style="font-size:24px">' + X.brl(X.total) + '</b><span>bônus nos casos</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
+      '<p style="color:#C3CBDD;margin-top:16px;font-size:16.5px">' + R[2] + '</p><a class="btn gold block" href="#oferta" id="seeb" style="margin-top:18px">Resgatar meu bônus 💰</a></div>' +
       (miss.length ? '<div class="rev"><span class="kicker">O que revisar</span><ul>' + miss.map(function (r) { return '<li><b>' + r.c.o[r.c.a][0] + '</b> (' + r.c.o[r.c.a][1] + '): verbo <b>' + r.c.vb + '</b></li>'; }).join('') + '</ul><p class="muted" style="margin-top:10px">No PenalFlux, o que você erra volta nos flashcards até fixar.</p></div>' : '') +
       '<div class="light"><h2 style="font-size:28px" class="center">Foram 7 casos. O Código tem 405 dispositivos.</h2>' +
       '<p class="center" style="color:var(--ink2);margin-top:8px;font-size:15.5px">No PenalFlux, cada um vem com o verbo-chave, a lei atualizada até 2026, a explicação em português simples, um exemplo e simulados no estilo das bancas.</p>' +
       '<img src="/j/qz/telas.webp" alt="Telas do app PenalFlux" width="1100" height="464" style="border-radius:14px;margin-top:16px">' +
-      '<div id="oferta"></div></div></div>';
-    window.PFOffer.render(document.getElementById('oferta'), { badge: 'Desbloqueie os 405 dispositivos', cta: 'Quero o PenalFlux Completo' });
+      '<div id="oferta" style="margin-top:16px"></div></div></div>';
+    var nc = EARN.acerto + EARN.rapido + EARN.seq;
+    X.play('fanfare');
+    var fin = X.fill('', document.querySelector('.badge-big'));
+    document.getElementById('seeb').onclick = function (e) { e.preventDefault(); X.play('tap'); document.getElementById('oferta').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    setTimeout(function () {
+      window.PFOffer.render(document.getElementById('oferta'), { lines: [['Acertos (' + ok + ' de 7)', EARN.acerto], ['Respostas rápidas', EARN.rapido], ['Sequências de acerto', EARN.seq], ['Bônus por concluir o desafio', fin]], title: 'Você juntou esse bônus no desafio. Ele já está aplicado no seu acesso abaixo.', cta: 'Usar meu bônus e liberar os 405 dispositivos' });
+    }, 500);
     window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do desafio', currency: 'BRL', value: 29.9 });
     window.scrollTo(0, 0);
   }

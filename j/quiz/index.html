@@ -8,7 +8,7 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Manrope:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/j/qz/q.css?v=1">
+<link rel="stylesheet" href="/j/qz/q.css?v=2">
 <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1021288667656467');fbq('track','PageView');</script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1021288667656467&ev=PageView&noscript=1"/></noscript>
 <script src="https://tracker.appdigitalhub.com.br/tracker.js" async data-endpoint="https://tracker.appdigitalhub.com.br" data-checkout="appdigitalhub.com.br/c/"></script>
@@ -18,11 +18,13 @@
   <button class="back" id="back" aria-label="Voltar">‹</button>
   <div class="qlogo"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="116" fill="#16264A"/><text x="256" y="350" text-anchor="middle" font-family="Georgia,serif" font-size="300" fill="#D6B467">§</text></svg><b style="font-weight:400">Penal<span>Flux</span></b></div>
   <div class="prog"><small id="pt">Diagnóstico</small><div class="bar"><i id="pb"></i></div></div>
+  <span id="wl"></span>
 </div></header>
 <main class="stage" id="stage"></main>
 <footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
-<script src="/j/qz/oferta.js?v=1"></script>
+<script src="/j/qz/fx.js?v=1"></script>
+<script src="/j/qz/oferta.js?v=2"></script>
 <script>
 (function () {
   'use strict';
@@ -45,6 +47,8 @@
   var st = document.getElementById('stage'), pb = document.getElementById('pb'), pt = document.getElementById('pt'), back = document.getElementById('back');
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var started = false;
+  var X = window.PFX, EARN = { resp: 0, teste: 0, plano: 0 };
+  var wl = document.getElementById('wl'); X.wallet(wl.parentNode); X.muteButton(wl.parentNode); wl.remove();
 
   function progress() {
     var done = Q.slice(0, i).filter(function (q) { return q.id; }).length;
@@ -53,7 +57,8 @@
     back.classList.toggle('on', hist.length > 0);
   }
   function go(n) { hist.push(i); i = n; show(); window.scrollTo(0, 0); }
-  back.onclick = function () { if (!hist.length) return; i = hist.pop(); show(); };
+  function gain(kind, v, from) { EARN[kind] += X.earn(v, '', from); }
+  back.onclick = function () { if (!hist.length) return; X.play('tap'); i = hist.pop(); show(); };
 
   function intro() {
     pb.style.width = '2%'; pt.textContent = 'Leva 1 minuto';
@@ -61,9 +66,10 @@
       '<h1 style="font-size:clamp(32px,8vw,44px);margin-top:10px">Descubra onde você está <span style="color:var(--gold2)">perdendo pontos</span> em Direito Penal</h1>' +
       '<p style="margin-top:14px;font-size:17px">Responda 7 perguntas rápidas e receba um diagnóstico do seu estudo e um plano com o tempo que você tem até a prova.</p>' +
       '<button class="btn gold block" id="go" style="margin-top:22px">Começar o diagnóstico</button>' +
-      '<p class="center" style="margin-top:12px;font-size:13px;color:#8F9BB8">Sem cadastro · resultado na hora</p></div>' +
+      '<p class="center" style="margin-top:12px;font-size:13px;color:#8F9BB8">Sem cadastro · resultado na hora</p>' +
+      '<div style="margin-top:16px;display:flex;gap:10px;align-items:center;justify-content:center;background:rgba(214,180,103,.12);border:1px dashed rgba(214,180,103,.5);border-radius:14px;padding:10px 12px;font-size:14.5px;color:var(--gold2);font-weight:700"><span style="font-size:20px">💰</span>Cada resposta vale um bônus. Vá juntando até o final.</div></div>' +
       '<div class="card" style="margin-top:16px;display:flex;gap:14px;align-items:center"><span style="font-size:30px">🔑</span><p style="font-size:15px;color:var(--ink2)">Feito a partir do <b style="color:var(--ink)">Método do Verbo-Chave</b>: cada crime do Código Penal tem um verbo que o diferencia dos outros.</p></div></div>';
-    document.getElementById('go').onclick = function () { started = true; window.PFOffer.trackCustom('QuizStart', { quiz: 'diagnostico' }); go(0); };
+    document.getElementById('go').onclick = function () { X.play('select'); started = true; window.PFOffer.trackCustom('QuizStart', { quiz: 'diagnostico' }); go(0); };
   }
 
   function show() {
@@ -75,13 +81,15 @@
       '<div class="opts">' + q.o.map(function (o) { return '<button class="opt" data-v="' + o[0] + '"><span class="em">' + o[1] + '</span><span>' + o[2] + (o[3] ? '<small>' + o[3] + '</small>' : '') + '</span></button>'; }).join('') + '</div><div id="fbk"></div></div>';
     st.querySelectorAll('.opt').forEach(function (b) {
       b.onclick = function () {
+        var first = A[q.id] === undefined;
         A[q.id] = b.dataset.v;
-        if (!q.quiz) { b.classList.add('sel'); setTimeout(function () { go(i + 1); }, 260); return; }
+        if (!q.quiz) { b.classList.add('sel'); X.play('select'); if (first) gain('resp', 1, b); setTimeout(function () { go(i + 1); }, first ? 650 : 260); return; }
         st.querySelectorAll('.opt').forEach(function (x) { x.disabled = true; if (x.dataset.v === q.quiz) x.classList.add('right'); else if (x === b) x.classList.add('wrong'); });
         var ok = b.dataset.v === q.quiz;
+        X.play(ok ? 'right' : 'wrong'); X.buzz(ok ? 30 : [40, 60, 40]); if (first) gain('teste', ok ? 2 : 1, b);
         document.getElementById('fbk').innerHTML = '<div class="fb"><b class="' + (ok ? 'ok">Acertou.' : 'no">Não foi dessa vez.') + '</b> O verbo é <b>exigir</b>: servidor que <b>exige</b> vantagem comete <b>concussão</b>. Se ele só tivesse <b>pedido</b>, seria corrupção passiva. É assim que o PenalFlux ensina cada crime: pelo verbo.</div>' +
           '<button class="btn navy block" id="nx" style="margin-top:14px">Continuar</button>';
-        document.getElementById('nx').onclick = function () { go(i + 1); };
+        document.getElementById('nx').onclick = function () { X.play('tap'); go(i + 1); };
       };
     });
   }
@@ -96,15 +104,16 @@
         '<p class="help" style="font-size:16px">O problema não é você. É estudar o Código como um texto corrido, sem saber o que olhar em cada artigo.</p>' +
         '<div class="card" style="margin-top:18px"><img src="/j/qz/telas.webp" alt="Telas do app PenalFlux: verbo do dia, artigo 157 com o verbo-chave, Código Penal, simulados e tabela de penas" width="1100" height="464" style="border-radius:12px"><p class="muted" style="margin-top:10px">No PenalFlux, cada artigo começa pelo verbo-chave, depois a lei, a explicação em português simples e um exemplo.</p></div>';
     st.innerHTML = '<div class="screen">' + html + '<button class="btn navy block" id="nx" style="margin-top:20px">Continuar</button></div>';
-    document.getElementById('nx').onclick = function () { go(i + 1); };
+    X.play('whoosh');
+    document.getElementById('nx').onclick = function () { X.play('tap'); go(i + 1); };
   }
 
   function askName() {
     st.innerHTML = '<div class="screen q"><span class="kicker">Última etapa</span><h2>Como você quer que o seu plano seja chamado?</h2><p class="help">Opcional. Só para personalizar o seu resultado.</p>' +
       '<input id="nm" maxlength="30" autocomplete="given-name" placeholder="Seu primeiro nome" style="width:100%;margin-top:20px;padding:16px;border-radius:14px;border:2px solid var(--line);font:inherit;font-size:17px">' +
       '<button class="btn gold block" id="nx" style="margin-top:14px">Ver meu diagnóstico</button><button class="muted" id="sk" style="display:block;margin:12px auto 0;text-decoration:underline">Pular</button></div>';
-    var f = function () { A.nome = (document.getElementById('nm').value || '').trim().split(/\s+/)[0].slice(0, 20); go(i + 1); };
-    document.getElementById('nx').onclick = f; document.getElementById('sk').onclick = function () { A.nome = ''; go(i + 1); };
+    var f = function () { A.nome = (document.getElementById('nm').value || '').trim().split(/\s+/)[0].slice(0, 20); X.play('select'); if (!EARN.plano) gain('plano', 0.5, document.getElementById('nx')); setTimeout(function () { go(i + 1); }, 600); };
+    document.getElementById('nx').onclick = f; document.getElementById('sk').onclick = function () { A.nome = ''; X.play('tap'); go(i + 1); };
     document.getElementById('nm').onkeydown = function (e) { if (e.key === 'Enter') f(); };
   }
 
@@ -117,7 +126,7 @@
     var p = 0, li = st.querySelectorAll('.steps li'), arc = document.getElementById('arc'), pc = document.getElementById('pc');
     var t = setInterval(function () {
       p += 2; arc.style.strokeDashoffset = 327 - 327 * p / 100; pc.textContent = p + '%';
-      li.forEach(function (x, k) { if (p >= (k + 1) * 24) x.classList.add('done'); });
+      li.forEach(function (x, k) { if (p >= (k + 1) * 24 && !x.classList.contains('done')) { x.classList.add('done'); X.play('tick'); } });
       if (p >= 100) { clearInterval(t); setTimeout(result, 450); }
     }, 90);
   }
@@ -146,7 +155,7 @@
       '<h1 style="font-size:clamp(28px,7vw,38px);margin-top:10px">Risco <span style="color:' + (nivel[0] === 'Baixo' ? '#7BD3A8' : 'var(--gold2)') + '">' + nivel[0].toLowerCase() + '</span> de perder pontos em Penal</h1>' +
       '<div style="margin-top:16px;height:12px;border-radius:99px;background:linear-gradient(90deg,#1E7F5C,#B8913A,#7B1E2B);position:relative"><i style="position:absolute;top:-6px;left:calc(' + nivel[2] + '% - 12px);width:24px;height:24px;border-radius:50%;background:#fff;border:4px solid ' + nivel[1] + '"></i></div>' +
       '<div style="display:flex;justify-content:space-between;font-size:12px;color:#8F9BB8;margin-top:8px;font-weight:700"><span>Baixo</span><span>Moderado</span><span>Alto</span></div>' +
-      '<p style="margin-top:18px">Para ' + esc(c) + ', o que mais pesa no seu caso: <b style="color:#fff">' + dor + '</b> e o hábito de <b style="color:#fff">' + met + '</b>. ' + (A.tst === 'a' ? 'Você acertou o teste da concussão, sinal de que o método do verbo funciona para você.' : 'No teste, a resposta era concussão: o verbo <b style="color:#fff">exigir</b> decide a questão.') + '</p></div>' +
+      '<p style="margin-top:18px">Para ' + esc(c) + ', o que mais pesa no seu caso: <b style="color:#fff">' + dor + '</b> e o hábito de <b style="color:#fff">' + met + '</b>. ' + (A.tst === 'a' ? 'Você acertou o teste da concussão, sinal de que o método do verbo funciona para você.' : 'No teste, a resposta era concussão: o verbo <b style="color:#fff">exigir</b> decide a questão.') + '</p><a class="btn gold block" href="#oferta" id="seeb" style="margin-top:18px">Ver meu plano e meu bônus 💰</a></div>' +
       '<div class="card" style="margin-top:16px"><span class="kicker">Seu plano' + (nome ? ', ' + nome : '') + '</span>' +
       '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px;text-align:center">' +
       '<div style="background:var(--bg);border-radius:14px;padding:12px 6px"><b style="font-family:var(--serif);font-weight:400;font-size:30px;display:block">' + perDay + '</b><span class="muted">artigos por dia</span></div>' +
@@ -155,8 +164,13 @@
       '<p style="margin-top:14px;font-size:15.5px;color:var(--ink2)">' + cabe + ' ' + (A.dev === 'cel' ? 'Como você estuda no celular, o app cabe nos intervalos do seu dia, com meta diária e lembrete.' : 'O app funciona no ' + (A.dev === 'pc' ? 'computador' : 'celular e no computador') + ', com meta diária e lembrete.') + '</p>' +
       '<ol style="margin:14px 0 0 20px;font-size:15.5px;display:grid;gap:6px"><li><b>Semana 1:</b> os 25 artigos mais cobrados, pelo verbo-chave.</li><li><b>Depois:</b> ' + perDay + ' artigos por dia, com flashcards do que você errar.</li><li><b>Toda semana:</b> um simulado comentado no estilo das bancas.</li></ol></div>' +
       '<h2 style="font-size:28px;margin-top:28px" class="center">Comece o seu plano hoje</h2><p class="center muted" style="font-size:15px;margin-top:6px">Tudo o que o plano usa está no PenalFlux Completo.</p>' +
-      '<div id="oferta"></div></div>';
-    window.PFOffer.render(document.getElementById('oferta'), { badge: nivel[0] === 'Baixo' ? 'Indicado para o seu perfil' : 'Indicado para risco ' + nivel[0].toLowerCase(), cta: 'Quero começar meu plano' });
+      '<div id="oferta" style="margin-top:16px"></div></div>';
+    X.play('level');
+    document.getElementById('seeb').onclick = function (e) { e.preventDefault(); X.play('tap'); document.getElementById('oferta').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    var of = document.getElementById('oferta'), fin = X.fill('', document.querySelector('.dark'));
+    setTimeout(function () {
+      window.PFOffer.render(of, { lines: [['7 respostas do diagnóstico', EARN.resp], ['Teste da concussão', EARN.teste], ['Plano personalizado', EARN.plano], ['Bônus por concluir', fin]], title: (nome ? nome + ', você' : 'Você') + ' juntou esse bônus respondendo o diagnóstico. Ele já está aplicado no seu acesso abaixo.', cta: 'Usar meu bônus e começar o plano' });
+    }, 500);
     window.PFOffer.track('ViewContent', { content_name: 'PenalFlux · resultado do quiz', currency: 'BRL', value: 29.9 });
     window.scrollTo(0, 0);
   }
