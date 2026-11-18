@@ -408,18 +408,17 @@ if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib'
 if(s.t&&Date.now()-s.t>30*864e5)s={};
 P.delete('afi');P.delete('afib');const rest=P.toString();
 document.querySelectorAll('a[data-ck]').forEach(a=>{a.addEventListener('click',()=>{try{fbq('track','InitiateCheckout',{currency:'BRL',value:a.dataset.ck==='basico'?10.9:29.9,content_name:a.dataset.ck==='basico'?'PenalFlux Básico':'PenalFlux Completo'})}catch(e){}});const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
-/* teste A/B e funil: sck no checkout (o src é do Tracker) e etapas para o painel */
-(()=>{let ab='';try{ab=localStorage.getItem('pf_ab')||''}catch(e){}
-let sid='';try{sid=sessionStorage.getItem('pf_sid')||''}catch(e){}
+/* funil da página de vendas (painel): cada etapa leva o ID do Tracker (rv_), que liga a visita à venda */
+(()=>{let sid='';try{sid=sessionStorage.getItem('pf_sid')||''}catch(e){}
 if(!/^[a-z0-9]{8,40}$/.test(sid)){sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);try{sessionStorage.setItem('pf_sid',sid)}catch(e){}}
 const P=new URLSearchParams(location.search),utm={};['utm_source','utm_medium','utm_campaign','utm_content','utm_term'].forEach(k=>{if(P.get(k))utm[k]=P.get(k)});
-const sent={};const ev=s=>{if(sent[s])return;sent[s]=1;const b=JSON.stringify({sid,quiz:'vendas',step:s,path:location.pathname,utm});try{if(navigator.sendBeacon&&navigator.sendBeacon('/api/qe',new Blob([b],{type:'text/plain'})))return}catch(e){}try{fetch('/api/qe',{method:'POST',body:b,keepalive:true})}catch(e){}};
-ev('view');
+const sent={};const ev=s=>{if(sent[s])return;sent[s]=1;let rv='';try{rv=localStorage.getItem('rastreio_vid')||''}catch(e){}
+const b=JSON.stringify({sid,quiz:'vendas',step:s,data:/^rv_[a-z0-9]{6,40}$/.test(rv)?{rv}:null,path:location.pathname,utm});try{if(navigator.sendBeacon&&navigator.sendBeacon('/api/qe',new Blob([b],{type:'text/plain'})))return}catch(e){}try{fetch('/api/qe',{method:'POST',body:b,keepalive:true})}catch(e){}};
+setTimeout(()=>ev('view'),1500);
 const of=document.getElementById('oferta');if(of&&'IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){ev('oferta');io.disconnect()}});io.observe(of)}
 addEventListener('scroll',()=>{if(scrollY>600)ev('scroll_oferta')},{passive:true});
-const tag=a=>{if(ab!=='quiz'&&ab!=='vendas')return;try{const u=new URL(a.href);u.searchParams.set('sck','ab_'+ab);a.href=u.toString()}catch(e){}};
-document.querySelectorAll('a[data-ck]').forEach(a=>{tag(a);a.addEventListener('click',()=>ev('click_'+a.dataset.ck))});
-document.addEventListener('click',e=>{const y=e.target.closest&&e.target.closest('#upyes');if(y){tag(y);ev('popup_yes')}},true);
+document.querySelectorAll('a[data-ck]').forEach(a=>a.addEventListener('click',()=>ev('click_'+a.dataset.ck)));
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('#upyes'))ev('popup_yes')},true);
 })();
 /* pop-up: quem escolhe o Básico recebe o Completo com desconto */
 (()=>{const CK_DESC='602A3D09';const bas=document.querySelector('a[data-ck="basico"]');if(!bas||!CK_DESC||CK_DESC.startsWith('__'))return;

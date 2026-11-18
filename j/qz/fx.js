@@ -95,6 +95,8 @@
   function ev(step, data, once) {
     if (!Q.quiz) return;
     if (once !== false && sent[step]) return; sent[step] = 1;
+    var rv = ''; try { rv = localStorage.getItem('rastreio_vid') || ''; } catch (e) {}
+    if (/^rv_[a-z0-9]{6,40}$/.test(rv)) { data = data || {}; data.rv = rv; } // ID do Tracker: liga a visita à venda (vem no src do checkout)
     var body = JSON.stringify({ sid: Q.sid, quiz: Q.quiz, step: step, data: data || null, path: location.pathname, utm: Q.utm });
     try { if (navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'text/plain' }))) return; } catch (e) {}
     try { fetch('/api/qe', { method: 'POST', body: body, keepalive: true, headers: { 'Content-Type': 'text/plain' } }); } catch (e) {}

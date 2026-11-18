@@ -241,7 +241,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       var q = V.quiz || {}, v = V.vendas || {}, tot = (q.visitas || 0) + (v.visitas || 0);
       var note = tot < 200 ? 'Ainda poucos dados (' + tot + ' visitas no teste). Espere pelo menos umas 300 visitas por lado e algumas vendas antes de decidir.' :
         'Compare principalmente vendas e faturamento por visita. Clique no checkout ajuda a ler cedo, mas quem decide é a venda.';
-      m.innerHTML = '<h1>Teste A/B: quiz x página de vendas</h1><p class="sub">Quem entra em /j/ é sorteado meio a meio (o sorteio fica no aparelho). As vendas são ligadas ao lado sorteado pelo link do checkout (sck=ab_quiz ou ab_vendas).</p>' +
+      m.innerHTML = '<h1>Teste A/B: quiz x página de vendas</h1><p class="sub">Quem entra em /j/ é sorteado meio a meio (o sorteio fica no aparelho). As vendas são ligadas ao lado sorteado pelo link do checkout (pelo ID de visitante do Tracker, que vai no link do checkout).</p>' +
         '<div class="bar"><button class="chip" data-p="hoje">Hoje</button><button class="chip" data-p="7">7 dias</button><button class="chip" data-p="30">30 dias</button><button class="chip" data-p="tudo">Tudo</button><button class="chip" id="rf">↻ Atualizar</button></div>' +
         '<p class="sub" style="margin:10px 0 0">' + esc(note) + '</p>' +
         '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px">' + col('quiz', 'A · Quiz (desafio)', 'penalflux.vercel.app/j/ → fica no desafio') + col('vendas', 'B · Página de vendas', 'penalflux.vercel.app/j/ → vai para /j/vendas/') + '</div>';

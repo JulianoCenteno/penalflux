@@ -165,8 +165,8 @@ function parse(payload: unknown) {
     titles: t,
     products,
     amount: Number.isFinite(amount) ? amount : null,
-    // variante do teste A/B quiz x página de vendas (?sck=ab_quiz|ab_vendas no link do checkout; o src é do Tracker)
-    src: (() => { const v = pick(payload, ["tracking.sck", "data.tracking.sck", "order.tracking.sck", "sck"]); return v && /^ab_/.test(String(v)) ? String(v).slice(0, 60) : null; })(),
+    // ID de visitante do Tracker (rv_..., vem no src do checkout): liga a venda à visita (teste A/B no painel)
+    src: (() => { const v = pick(payload, ["tracking.src", "data.tracking.src", "order.tracking.src", "src"]); return v && /^rv_[a-z0-9]{6,40}$/i.test(String(v)) ? String(v) : null; })(),
   };
 }
 
