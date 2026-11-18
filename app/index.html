@@ -402,6 +402,8 @@ details.full[open] summary{border-bottom:1px solid var(--line)}
 <script>
 (()=>{const API='/api/',TK='pf_tok',$g=id=>document.getElementById(id);
 const showForm=msg=>{$g('pfLoad').hidden=true;$g('pfForm').hidden=false;$g('pfErr').textContent=msg||'';};
+/* link de acesso do painel (/app/#e=email&n=nome): já preenche o login; fica depois do #, não vai para o servidor */
+(()=>{try{const h=new URLSearchParams(location.hash.slice(1));if(h.get('e')){$g('pfE').value=h.get('e');if(h.get('n'))$g('pfN').value=h.get('n');history.replaceState(null,'',location.pathname+location.search);}}catch(e){}})();
 window.pfToken=()=>{try{return localStorage.getItem(TK)||''}catch(e){return ''}};
 const setTok=t=>{try{t?localStorage.setItem(TK,t):localStorage.removeItem(TK)}catch(e){}};
 async function me(){const t=pfToken();if(!t)return showForm();

@@ -158,6 +158,27 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
   // ---------------- liberar acesso na mão ----------------
   var PLANO = { basico: 'Básico', completo: 'Completo', todos: 'Completo + Leve Todos (Leis Especiais, Mapa dos Verbos, Processo Penal)' };
   function planoDe(p) { p = p || []; return p.indexOf('todos') >= 0 ? 'Completo + Leve Todos' : p.indexOf('completo') >= 0 ? 'Completo' : 'Básico'; }
+  function acessoLink(email, name) {
+    var first = String(name || '').trim().split(/\s+/)[0] || '';
+    var link = 'https://penalflux.com.br/app/#e=' + encodeURIComponent(email) + (first ? '&n=' + encodeURIComponent(first) : '');
+    var msg = 'Olá' + (first ? ', ' + first : '') + '! Seu acesso ao PenalFlux está liberado.\n\nEntre por este link: ' + link + '\n' +
+      (first ? 'Use o nome ' + first + ' e o e-mail ' + email + '.' : 'Use o e-mail ' + email + ' e o seu nome.') + '\n\nO acesso vale em até 2 aparelhos. Qualquer dúvida, é só me chamar.';
+    return { link: link, msg: msg };
+  }
+  function mostrarLink(email, name) {
+    var a = acessoLink(email, name), box = document.getElementById('g-link');
+    box.hidden = false;
+    box.innerHTML = '<h2>Acesso de ' + esc(email) + '</h2><p class="h2s">Mande a mensagem abaixo para a pessoa. O link abre o app com o e-mail e o nome já preenchidos.</p>' +
+      '<textarea class="inp" id="g-msg" rows="7" style="width:100%;box-sizing:border-box;font:inherit;margin-top:6px">' + esc(a.msg) + '</textarea>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><button class="btn" id="g-cp" style="width:auto">Copiar mensagem</button>' +
+      '<a class="btn" style="width:auto;background:#1E7F5C" target="_blank" rel="noopener" href="https://wa.me/?text=' + encodeURIComponent(a.msg) + '">Enviar no WhatsApp</a>' +
+      '<button class="chip" id="g-cl">Copiar só o link</button></div><div class="mut" id="g-ok" style="margin-top:8px"></div>';
+    var cp = function (t, ok) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { document.getElementById('g-ok').textContent = ok; }).catch(function () { var x = document.getElementById('g-msg'); x.focus(); x.select(); document.getElementById('g-ok').textContent = 'Selecionei a mensagem: use Ctrl+C.'; }); };
+    document.getElementById('g-cp').onclick = function () { cp(document.getElementById('g-msg').value, 'Mensagem copiada.'); };
+    document.getElementById('g-cl').onclick = function () { cp(a.link, 'Link copiado.'); };
+    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+  var LAST = null;
   function liberar(m, d) {
     var G = d.grants || [];
     m.innerHTML = '<h1>Liberar acesso</h1><p class="sub">Para dar acesso sem compra (cortesia, troca de e-mail, suporte). A pessoa entra em <b>penalflux.com.br/app</b> com o e-mail e o nome cadastrados aqui. O app não usa senha.</p>' +
@@ -166,16 +187,17 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       '<label class="lf">Nome<input class="inp" id="g-nm" placeholder="Ex.: Maria Silva" autocomplete="off"><small class="mut">A pessoa digita este primeiro nome no login. Deixe vazio para aceitar qualquer nome.</small></label>' +
       '<label class="lf">Plano<select class="inp" id="g-pl"><option value="completo">Completo</option><option value="basico">Básico</option><option value="todos">Completo + Leve Todos</option></select></label></div>' +
       '<button class="btn" id="g-go" style="margin-top:14px;max-width:260px">Liberar acesso</button><div class="err" id="g-er" style="margin-top:8px"></div></div>' +
+      '<div class="card" id="g-link" hidden></div>' +
       '<div class="card"><h2>Acessos liberados aqui</h2><div class="tw"><table><thead><tr><th>Pessoa</th><th>Plano</th><th>Situação</th><th>Liberado em</th><th></th></tr></thead><tbody>' +
       (G.length ? G.map(function (g) {
         var on = g.status === 'paid';
         return '<tr><td><b>' + esc(g.name || '(qualquer nome)') + '</b><br><span class="mut">' + esc(g.email) + '</span></td><td>' + planoDe(g.products) + '</td><td>' + (on ? '<span class="tag g">Ativo</span>' : '<span class="tag r">Removido</span>') + '</td><td>' + dt(g.updated_at) + '</td>' +
-          '<td>' + (on ? '<button class="chip" data-rv="' + esc(g.email) + '">Tirar acesso</button>' : '<button class="chip" data-re="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '" data-pl="' + (g.products.indexOf('todos') >= 0 ? 'todos' : g.products.indexOf('completo') >= 0 ? 'completo' : 'basico') + '">Liberar de novo</button>') + '</td></tr>';
+          '<td style="white-space:nowrap">' + (on ? '<button class="chip" data-lk="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '">Link de acesso</button> <button class="chip" data-rv="' + esc(g.email) + '">Tirar acesso</button>' : '<button class="chip" data-re="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '" data-pl="' + (g.products.indexOf('todos') >= 0 ? 'todos' : g.products.indexOf('completo') >= 0 ? 'completo' : 'basico') + '">Liberar de novo</button>') + '</td></tr>';
       }).join('') : '<tr><td colspan="5" class="mut">Nenhum acesso liberado na mão ainda.</td></tr>') + '</tbody></table></div></div>';
     var er = document.getElementById('g-er');
     var grant = function (email, name, plan) {
       er.style.color = ''; er.textContent = 'Liberando…';
-      return post('grant', { email: email, name: name, plan: plan }).then(function () { draw(); C = null; })
+      return post('grant', { email: email, name: name, plan: plan }).then(function () { LAST = { email: email.toLowerCase(), name: name }; C = null; draw(); })
         .catch(function (e) { if (e.status === 401) return login(e.message); er.textContent = e.message; });
     };
     document.getElementById('g-go').onclick = function () {
@@ -188,6 +210,8 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       post('revoke', { email: b.dataset.rv }).then(function () { C = null; draw(); }).catch(function (e) { if (e.status === 401) return login(e.message); alertBox(e.message); });
     }; });
     m.querySelectorAll('[data-re]').forEach(function (b) { b.onclick = function () { grant(b.dataset.re, b.dataset.nm, b.dataset.pl); }; });
+    m.querySelectorAll('[data-lk]').forEach(function (b) { b.onclick = function () { mostrarLink(b.dataset.lk, b.dataset.nm); }; });
+    if (LAST) { var L0 = LAST; LAST = null; mostrarLink(L0.email, L0.name); }
     function alertBox(t) { er.textContent = t; }
   }
 
