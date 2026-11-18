@@ -7,7 +7,7 @@
 //   GET  /pdf?f=especiais   link temporário do PDF
 //   POST /logout
 //   POST /qe                etapa do funil dos quizzes (sem login)
-//   GET  /admin/...         painel do admin: login do Forja do Herói (Authorization: Bearer) com e-mail em
+//   GET  /admin/...         painel do admin (POST /admin/grant e /admin/revoke: liberar ou tirar acesso na mão): login do Forja do Herói (Authorization: Bearer) com e-mail em
 //                           pf_settings.admin_emails, ou a chave reserva pf_settings.admin_key (header x-pf-admin)
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -400,6 +400,40 @@ async function admin(req: Request, url: URL, route: string) {
     const { data, error } = await db.rpc("pf_ab_report", { p_from: from, p_to: to });
     if (error) throw new Error(error.message);
     return json({ variants: data });
+  }
+  // liberar acesso na mão (sem compra): a pessoa entra no app com o e-mail e o nome cadastrados aqui
+  if (route === "/admin/grants") {
+    const { data } = await db.from("pf_orders").select("id, email, name, status, products, created_at, updated_at").eq("source", "manual").order("updated_at", { ascending: false }).limit(200);
+    return json({ grants: data || [] });
+  }
+  if (route === "/admin/grant" && req.method === "POST") {
+    const b = await req.json().catch(() => ({}));
+    const email = normEmail(b.email);
+    const name = String(b.name || "").trim().slice(0, 120) || null;
+    const PLANS: Record<string, string[]> = {
+      basico: ["basico"],
+      completo: ["basico", "completo"],
+      todos: ["basico", "completo", "cpp", "especiais", "todos", "verbos"],
+    };
+    const products = PLANS[String(b.plan || "")];
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return json({ error: "E-mail inválido." }, 400);
+    if (!products) return json({ error: "Escolha o plano." }, 400);
+    const { error } = await db.from("pf_orders").upsert({
+      id: "manual:" + email, email, name, status: "paid", products, amount: 0, source: "manual", updated_at: new Date().toISOString(),
+    });
+    if (error) throw new Error(error.message);
+    await act(email, "liberado", { plano: b.plan, por: who });
+    return json({ ok: true, owned: (await access(email)).owned });
+  }
+  if (route === "/admin/revoke" && req.method === "POST") {
+    const b = await req.json().catch(() => ({}));
+    const email = normEmail(b.email);
+    const { error } = await db.from("pf_orders").update({ status: "canceled", updated_at: new Date().toISOString() }).eq("id", "manual:" + email);
+    if (error) throw new Error(error.message);
+    const acc = await access(email);
+    if (!acc.owned.length) await db.from("pf_sessions").delete().eq("email", email);
+    await act(email, "acesso_removido", { por: who });
+    return json({ ok: true, owned: acc.owned });
   }
   if (route === "/admin/webhooks") {
     const { data } = await db.from("pf_events").select("created_at, email, status, result").order("created_at", { ascending: false }).limit(40);
