@@ -30,6 +30,17 @@ const norm = (s: unknown) =>
   String(s ?? "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9@._+-]+/g, " ").trim();
 const normEmail = (s: unknown) => String(s ?? "").trim().toLowerCase();
 const firstName = (s: unknown) => norm(s).replace(/[^a-z ]/g, " ").trim().split(/\s+/)[0] || "";
+// Nome do login com tolerância a grafia: Tamires = Tamyres = Tamyris, Rafaela = Raphaela, Thiago = Tiago...
+const nameKey = (s: string) => s.replace(/ph/g, "f").replace(/h/g, "").replace(/y/g, "i").replace(/w/g, "v").replace(/k/g, "c").replace(/(.)\1+/g, "$1");
+function lev(a: string, b: string) {
+  const d = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    let prev = d[0]; d[0] = i;
+    for (let j = 1; j <= b.length; j++) { const t = d[j]; d[j] = Math.min(d[j] + 1, d[j - 1] + 1, prev + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = t; }
+  }
+  return d[b.length];
+}
+const sameName = (a: string, b: string) => { if (a === b) return true; const x = nameKey(a), y = nameKey(b); return x === y || (Math.min(x.length, y.length) >= 4 && lev(x, y) <= 1); };
 
 async function sha256(s: string) {
   const b = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
@@ -243,7 +254,7 @@ async function login(req: Request) {
     return json({ error: "Não encontramos uma compra aprovada com esse e-mail. Use o mesmo e-mail da compra. No Pix, a liberação leva até alguns minutos." }, 404);
   }
   const fn = firstName(name);
-  if (acc.names.length && !acc.names.some((n) => firstName(n) === fn)) {
+  if (acc.names.length && !acc.names.some((n) => sameName(firstName(n), fn))) {
     await act(email, "login_fail", { motivo: "nome não confere", nome: name.slice(0, 40), aparelho: device(req) });
     return json({ error: "O nome não confere com o da compra. Digite o primeiro nome como você colocou no pedido." }, 403);
   }
@@ -433,6 +444,16 @@ async function admin(req: Request, url: URL, route: string) {
     const acc = await access(email);
     if (!acc.owned.length) await db.from("pf_sessions").delete().eq("email", email);
     await act(email, "acesso_removido", { por: who });
+    return json({ ok: true, owned: acc.owned });
+  }
+  if (route === "/admin/delete" && req.method === "POST") {
+    const b = await req.json().catch(() => ({}));
+    const email = normEmail(b.email);
+    const { error } = await db.from("pf_orders").delete().eq("id", "manual:" + email);
+    if (error) throw new Error(error.message);
+    const acc = await access(email);
+    if (!acc.owned.length) await db.from("pf_sessions").delete().eq("email", email);
+    await act(email, "acesso_excluido", { por: who });
     return json({ ok: true, owned: acc.owned });
   }
   if (route === "/admin/webhooks") {

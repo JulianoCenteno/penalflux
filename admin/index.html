@@ -110,7 +110,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
   };
   var pct = function (a, b) { return b ? Math.round(a / b * 100) : 0; };
   var PROD = { basico: 'Básico', completo: 'Completo', todos: 'Leve Todos', especiais: 'Leis Especiais', verbos: 'Mapa dos Verbos', cpp: 'Processo Penal', banco: 'Banco de Questões', mini: 'Simulado Diário', audio: 'Áudios' };
-  var KIND = { login: 'Entrou no app', app: 'Abriu o app', pdf: 'Baixou PDF', login_fail: 'Login falhou', liberado: 'Acesso liberado pelo admin', acesso_removido: 'Acesso removido pelo admin' };
+  var KIND = { login: 'Entrou no app', app: 'Abriu o app', pdf: 'Baixou PDF', login_fail: 'Login falhou', liberado: 'Acesso liberado pelo admin', acesso_removido: 'Acesso removido pelo admin', acesso_excluido: 'Acesso excluído pelo admin' };
 
   // ---------------- login ----------------
   function login(msg, withKey) {
@@ -184,7 +184,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
     m.innerHTML = '<h1>Liberar acesso</h1><p class="sub">Para dar acesso sem compra (cortesia, troca de e-mail, suporte). A pessoa entra em <b>penalflux.com.br/app</b> com o e-mail e o nome cadastrados aqui. O app não usa senha.</p>' +
       '<div class="card"><h2>Novo acesso</h2><div style="display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:10px">' +
       '<label class="lf">E-mail<input class="inp" id="g-em" type="email" placeholder="email@cliente.com" autocomplete="off"></label>' +
-      '<label class="lf">Nome<input class="inp" id="g-nm" placeholder="Ex.: Maria Silva" autocomplete="off"><small class="mut">A pessoa digita este primeiro nome no login. Deixe vazio para aceitar qualquer nome.</small></label>' +
+      '<label class="lf">Nome<input class="inp" id="g-nm" placeholder="Ex.: Maria Silva" autocomplete="off"><small class="mut">A pessoa digita este primeiro nome no login (pequenas diferenças de grafia passam, como Tamires e Tamyris). Deixe vazio para aceitar qualquer nome.</small></label>' +
       '<label class="lf">Plano<select class="inp" id="g-pl"><option value="completo">Completo</option><option value="basico">Básico</option><option value="todos">Completo + Leve Todos</option></select></label></div>' +
       '<button class="btn" id="g-go" style="margin-top:14px;max-width:260px">Liberar acesso</button><div class="err" id="g-er" style="margin-top:8px"></div></div>' +
       '<div class="card" id="g-link" hidden></div>' +
@@ -192,7 +192,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       (G.length ? G.map(function (g) {
         var on = g.status === 'paid';
         return '<tr><td><b>' + esc(g.name || '(qualquer nome)') + '</b><br><span class="mut">' + esc(g.email) + '</span></td><td>' + planoDe(g.products) + '</td><td>' + (on ? '<span class="tag g">Ativo</span>' : '<span class="tag r">Removido</span>') + '</td><td>' + dt(g.updated_at) + '</td>' +
-          '<td style="white-space:nowrap">' + (on ? '<button class="chip" data-lk="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '">Link de acesso</button> <button class="chip" data-rv="' + esc(g.email) + '">Tirar acesso</button>' : '<button class="chip" data-re="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '" data-pl="' + (g.products.indexOf('todos') >= 0 ? 'todos' : g.products.indexOf('completo') >= 0 ? 'completo' : 'basico') + '">Liberar de novo</button>') + '</td></tr>';
+          '<td style="white-space:nowrap">' + (on ? '<button class="chip" data-lk="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '">Link de acesso</button> <button class="chip" data-rv="' + esc(g.email) + '">Tirar acesso</button> <button class="chip" data-del="' + esc(g.email) + '">Excluir</button>' : '<button class="chip" data-re="' + esc(g.email) + '" data-nm="' + esc(g.name || '') + '" data-pl="' + (g.products.indexOf('todos') >= 0 ? 'todos' : g.products.indexOf('completo') >= 0 ? 'completo' : 'basico') + '">Liberar de novo</button> <button class="chip" data-del="' + esc(g.email) + '">Excluir</button>') + '</td></tr>';
       }).join('') : '<tr><td colspan="5" class="mut">Nenhum acesso liberado na mão ainda.</td></tr>') + '</tbody></table></div></div>';
     var er = document.getElementById('g-er');
     var grant = function (email, name, plan) {
@@ -210,6 +210,10 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
       post('revoke', { email: b.dataset.rv }).then(function () { C = null; draw(); }).catch(function (e) { if (e.status === 401) return login(e.message); alertBox(e.message); });
     }; });
     m.querySelectorAll('[data-re]').forEach(function (b) { b.onclick = function () { grant(b.dataset.re, b.dataset.nm, b.dataset.pl); }; });
+    m.querySelectorAll('[data-del]').forEach(function (b) { b.onclick = function () {
+      if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Confirmar: excluir de vez'; b.style.color = '#B3261E'; return; }
+      post('delete', { email: b.dataset.del }).then(function () { C = null; draw(); }).catch(function (e) { if (e.status === 401) return login(e.message); alertBox(e.message); });
+    }; });
     m.querySelectorAll('[data-lk]').forEach(function (b) { b.onclick = function () { mostrarLink(b.dataset.lk, b.dataset.nm); }; });
     if (LAST) { var L0 = LAST; LAST = null; mostrarLink(L0.email, L0.name); }
     function alertBox(t) { er.textContent = t; }
