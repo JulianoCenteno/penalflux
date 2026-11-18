@@ -22,7 +22,7 @@
     if (afi) u.searchParams.set('afi', afi);
     if (rest) new URLSearchParams(rest).forEach(function (v, k) { u.searchParams.set(k, v); });
     var ab = ''; try { ab = localStorage.getItem('pf_ab') || ''; } catch (e) {}
-    if (ab === 'quiz' || ab === 'vendas') u.searchParams.set('src', 'ab_' + ab);
+    if (ab === 'quiz' || ab === 'vendas') u.searchParams.set('sck', 'ab_' + ab);
     return u.toString();
   };
   var dec = function (h) { return (window.Rastreio && window.Rastreio.decorate) ? window.Rastreio.decorate(h) : h; };

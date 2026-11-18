@@ -133,7 +133,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
   var tab = 'clientes', C = null;
   function boot() {
     app.innerHTML = '<div class="top"><div class="in"><div class="brand">Penal<span>Flux</span> <span style="color:#AEB8CF;font-family:Manrope;font-size:13px;font-weight:700">painel</span></div>' +
-      '<div class="tabs"><button data-t="clientes">Clientes</button><button data-t="funil">Funil do quiz</button><button data-t="vendas">Webhooks</button></div><button class="out" id="out">Sair</button></div></div><div class="wrap" id="main"></div>' +
+      '<div class="tabs"><button data-t="clientes">Clientes</button><button data-t="funil">Funil do quiz</button><button data-t="ab">Teste A/B</button><button data-t="vendas">Webhooks</button></div><button class="out" id="out">Sair</button></div></div><div class="wrap" id="main"></div>' +
       '<div class="dr" id="dr"><div class="pn" id="pn"></div></div>';
     document.querySelectorAll('[data-t]').forEach(function (b) { b.onclick = function () { tab = b.dataset.t; draw(); }; });
     document.getElementById('out').onclick = function () { try { localStorage.removeItem(KEY); localStorage.removeItem(SKEY); } catch (e) {} key = ''; sess = null; login(); };
@@ -146,6 +146,7 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
     var fail = function (e) { if (e.status === 401) return login(e.message); m.innerHTML = '<div class="empty">Erro: ' + esc(e.message) + '</div>'; };
     if (tab === 'clientes') api('customers').then(function (d) { C = d; clientes(m, d); }).catch(fail);
     else if (tab === 'funil') funil(m).catch(fail);
+    else if (tab === 'ab') abtest(m).catch(fail);
     else api('webhooks').then(function (d) { vendas(m, d); }).catch(fail);
   }
 
@@ -219,6 +220,36 @@ tbody tr.click{cursor:pointer}tbody tr.click:hover{background:#FAFBFC}
     if (PER === 'hoje') { from = new Date(); from.setHours(0, 0, 0, 0); } else if (PER === 'tudo') from = new Date('2026-01-01'); else from = new Date(Date.now() - (+PER) * 864e5);
     return { from: from, to: to };
   }
+  // ---------------- teste A/B: quiz x página de vendas ----------------
+  function abtest(m) {
+    var r = range();
+    return api('ab?from=' + encodeURIComponent(r.from.toISOString()) + '&to=' + encodeURIComponent(r.to.toISOString())).then(function (d) {
+      var V = {}; (d.variants || []).forEach(function (x) { V[x.variante] = x; });
+      var brl = function (v) { return 'R$ ' + Number(v || 0).toFixed(2).replace('.', ','); };
+      var col = function (k, nome, sub) {
+        var x = V[k] || {}, vis = x.visitas || 0;
+        return '<div class="card" style="flex:1;min-width:260px"><h2>' + nome + '</h2><p class="h2s">' + sub + '</p>' +
+          '<div class="kpis" style="grid-template-columns:1fr 1fr">' +
+          '<div class="kpi"><span>Visitas</span><b>' + vis + '</b><small>pessoas sorteadas</small></div>' +
+          '<div class="kpi"><span>Engajaram</span><b>' + (x.engajaram || 0) + '</b><small>' + pct(x.engajaram || 0, vis) + '% ' + (k === 'quiz' ? 'responderam o 1º caso' : 'rolaram a página') + '</small></div>' +
+          '<div class="kpi"><span>Viram a oferta</span><b>' + (x.viram_oferta || 0) + '</b><small>' + pct(x.viram_oferta || 0, vis) + '% das visitas</small></div>' +
+          '<div class="kpi"><span>Clicaram no checkout</span><b>' + (x.clicaram_checkout || 0) + '</b><small>' + pct(x.clicaram_checkout || 0, vis) + '% das visitas</small></div>' +
+          '<div class="kpi"><span>Vendas aprovadas</span><b>' + (x.vendas || 0) + '</b><small>' + (vis ? (x.vendas / vis * 100).toFixed(1).replace('.', ',') : '0') + '% das visitas</small></div>' +
+          '<div class="kpi"><span>Faturamento</span><b style="font-size:24px">' + brl(x.faturamento) + '</b><small>' + (vis ? brl(x.faturamento / vis) + ' por visita' : '') + '</small></div>' +
+          '</div></div>';
+      };
+      var q = V.quiz || {}, v = V.vendas || {}, tot = (q.visitas || 0) + (v.visitas || 0);
+      var note = tot < 200 ? 'Ainda poucos dados (' + tot + ' visitas no teste). Espere pelo menos umas 300 visitas por lado e algumas vendas antes de decidir.' :
+        'Compare principalmente vendas e faturamento por visita. Clique no checkout ajuda a ler cedo, mas quem decide é a venda.';
+      m.innerHTML = '<h1>Teste A/B: quiz x página de vendas</h1><p class="sub">Quem entra em /j/ é sorteado meio a meio (o sorteio fica no aparelho). As vendas são ligadas ao lado sorteado pelo link do checkout (sck=ab_quiz ou ab_vendas).</p>' +
+        '<div class="bar"><button class="chip" data-p="hoje">Hoje</button><button class="chip" data-p="7">7 dias</button><button class="chip" data-p="30">30 dias</button><button class="chip" data-p="tudo">Tudo</button><button class="chip" id="rf">↻ Atualizar</button></div>' +
+        '<p class="sub" style="margin:10px 0 0">' + esc(note) + '</p>' +
+        '<div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:14px">' + col('quiz', 'A · Quiz (desafio)', 'penalflux.vercel.app/j/ → fica no desafio') + col('vendas', 'B · Página de vendas', 'penalflux.vercel.app/j/ → vai para /j/vendas/') + '</div>';
+      document.querySelectorAll('[data-p]').forEach(function (b) { b.classList.toggle('on', b.dataset.p === PER); b.onclick = function () { PER = b.dataset.p; draw(); }; });
+      document.getElementById('rf').onclick = draw;
+    });
+  }
+
   function funil(m) {
     var r = range();
     var pc = C ? Promise.resolve(C) : api('customers').then(function (d) { C = d; return d; });

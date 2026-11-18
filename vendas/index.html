@@ -408,7 +408,7 @@ if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib'
 if(s.t&&Date.now()-s.t>30*864e5)s={};
 P.delete('afi');P.delete('afib');const rest=P.toString();
 document.querySelectorAll('a[data-ck]').forEach(a=>{a.addEventListener('click',()=>{try{fbq('track','InitiateCheckout',{currency:'BRL',value:a.dataset.ck==='basico'?10.9:29.9,content_name:a.dataset.ck==='basico'?'PenalFlux Básico':'PenalFlux Completo'})}catch(e){}});const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
-/* teste A/B e funil: src no checkout e etapas para o painel */
+/* teste A/B e funil: sck no checkout (o src é do Tracker) e etapas para o painel */
 (()=>{let ab='';try{ab=localStorage.getItem('pf_ab')||''}catch(e){}
 let sid='';try{sid=sessionStorage.getItem('pf_sid')||''}catch(e){}
 if(!/^[a-z0-9]{8,40}$/.test(sid)){sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);try{sessionStorage.setItem('pf_sid',sid)}catch(e){}}
@@ -417,7 +417,7 @@ const sent={};const ev=s=>{if(sent[s])return;sent[s]=1;const b=JSON.stringify({s
 ev('view');
 const of=document.getElementById('oferta');if(of&&'IntersectionObserver'in window){const io=new IntersectionObserver(es=>{if(es.some(x=>x.isIntersecting)){ev('oferta');io.disconnect()}});io.observe(of)}
 addEventListener('scroll',()=>{if(scrollY>600)ev('scroll_oferta')},{passive:true});
-const tag=a=>{if(ab!=='quiz'&&ab!=='vendas')return;try{const u=new URL(a.href);u.searchParams.set('src','ab_'+ab);a.href=u.toString()}catch(e){}};
+const tag=a=>{if(ab!=='quiz'&&ab!=='vendas')return;try{const u=new URL(a.href);u.searchParams.set('sck','ab_'+ab);a.href=u.toString()}catch(e){}};
 document.querySelectorAll('a[data-ck]').forEach(a=>{tag(a);a.addEventListener('click',()=>ev('click_'+a.dataset.ck))});
 document.addEventListener('click',e=>{const y=e.target.closest&&e.target.closest('#upyes');if(y){tag(y);ev('popup_yes')}},true);
 })();
