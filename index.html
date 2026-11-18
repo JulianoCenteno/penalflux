@@ -42,6 +42,7 @@ body{background:var(--navy)}
 .rev li{margin:6px 0 0 18px;font-size:15px}
 .light{background:var(--bg);color:var(--ink);border-radius:24px;padding:22px 16px;margin:24px -6px 0}
 footer{color:#5E6B88}
+.welcome{text-align:center;margin:-4px 0 14px}.welcome b{display:block;font-family:var(--serif);font-weight:400;font-size:24px;color:var(--gold2)}.welcome span{display:block;font-size:13.5px;color:#AEB8CF;font-weight:700;margin-top:2px}
 </style>
 <script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1021288667656467');fbq('track','PageView');</script>
 <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1021288667656467&ev=PageView&noscript=1"/></noscript>
@@ -75,6 +76,11 @@ footer{color:#5E6B88}
     { lvl: 'Nível 2 · Crimes contra a administração pública', s: 'Um servidor leva para casa, e fica para si, o notebook da repartição que estava sob a guarda dele por causa do cargo.', o: [['Furto', 'art. 155'], ['Apropriação indébita', 'art. 168'], ['Peculato', 'art. 312']], a: 2, vb: 'apropriar-se', e: 'Funcionário público que <b>se apropria</b> de bem que tem a posse <b>em razão do cargo</b> comete peculato. Se fosse um particular, seria apropriação indébita.' },
     { lvl: 'Chefão · A pegadinha das bancas', s: 'Irritado, João escreve no grupo do trabalho que o colega Pedro “é um ladrão”, sem contar nenhum fato.', o: [['Calúnia', 'art. 138'], ['Difamação', 'art. 139'], ['Injúria', 'art. 140']], a: 2, vb: 'ofender a dignidade', e: 'Chamar alguém de ladrão, sem apontar um fato concreto, é <b>injúria</b>: ofende a dignidade. Calúnia exige <b>imputar falsamente um fato</b> definido como crime (“ele furtou o celular da Maria ontem”).' }
   ];
+  var KEYS = { furto: 0, roubo: 1, estelionato: 2, golpe: 2, pix: 2, apropriacao: 3, extorsao: 4, concussao: 5, exigir: 5, corrupcao: 6, propina: 6, ativa: 7, peculato: 8, injuria: 9, calunia: 9 };
+  var Q = (new URLSearchParams(location.search).get('caso') || '').toLowerCase().normalize('NFD').replace(/[^a-z0-9]/g, '');
+  var FIRST = KEYS.hasOwnProperty(Q) ? KEYS[Q] : (/^\d+$/.test(Q) && +Q >= 1 && +Q <= C.length ? +Q - 1 : 0);
+  if (FIRST > 0) { var mv = C.splice(FIRST, 1)[0]; mv = Object.assign({}, mv, { lvl: 'Caso de abertura · ' + mv.lvl.split('·').pop().trim() }); C.unshift(mv); }
+  var started = false;
   var st = document.getElementById('stage'), pb = document.getElementById('pb'), pt = document.getElementById('pt');
   var i = 0, streak = 0, best = 0, res = [], timer = null, left = TIME;
   var X = window.PFX, EARN = { acerto: 0, rapido: 0, seq: 0 };
@@ -99,10 +105,14 @@ footer{color:#5E6B88}
   function play() {
     var c = C[i]; left = TIME;
     pb.style.width = Math.round(i / C.length * 100) + '%'; pt.textContent = 'Caso ' + (i + 1) + ' de ' + C.length;
-    st.innerHTML = '<div class="screen">' + hud() + '<div class="timer" id="tm"><i id="ti"></i></div>' +
+    var first = i === 0;
+    st.innerHTML = '<div class="screen">' + (first ? '<div class="welcome"><b>Desafio grátis do Código Penal</b><span>10 casos de prova · sem cadastro · descubra sua patente</span></div>' : '') + hud() + (first ? '' : '<div class="timer" id="tm"><i id="ti"></i></div>') +
       '<div class="case" id="cs"><span class="lvl">' + c.lvl + '</span><p class="sc">' + c.s + '</p><p class="muted" style="margin-top:6px">Qual é o crime?</p>' +
       '<div class="opts">' + c.o.map(function (o, k) { return '<button class="opt" data-k="' + k + '"><span class="em">' + 'ABC'[k] + '</span><span>' + o[0] + '<small>' + o[1] + '</small></span></button>'; }).join('') + '</div><div id="ex"></div></div></div>';
     st.querySelectorAll('.opt').forEach(function (b) { b.onclick = function () { answer(+b.dataset.k); }; });
+    clearInterval(timer);
+    window.scrollTo(0, 0);
+    if (first) return;
     var ti = document.getElementById('ti'), tm = document.getElementById('tm');
     requestAnimationFrame(function () { ti.style.width = '100%'; });
     clearInterval(timer);
@@ -111,7 +121,6 @@ footer{color:#5E6B88}
       if (left <= 7) { tm.classList.add('low'); if (left > 0) X.play('tick'); }
       if (left <= 0) { clearInterval(timer); answer(-1); }
     }, 1000);
-    window.scrollTo(0, 0);
   }
 
   function burst() {
@@ -126,6 +135,7 @@ footer{color:#5E6B88}
   function answer(k) {
     clearInterval(timer);
     var c = C[i], ok = k === c.a, gained = 0;
+    if (!started) { started = true; EV('start', { first: FIRST + 1 }); window.PFOffer.trackCustom('QuizStart', { quiz: 'desafio' }); }
     EV('c' + (i + 1), { ok: ok, t: TIME - Math.max(0, left) });
     st.querySelectorAll('.opt').forEach(function (x, j) { x.disabled = true; if (j === c.a) x.classList.add('right'); else if (j === k) x.classList.add('wrong'); });
     if (ok) {
@@ -150,20 +160,20 @@ footer{color:#5E6B88}
       X.play('tap');
       i++;
       if (i >= C.length) return finish();
-      if (i === 5) return levelUp('Nível 2 desbloqueado', 'Crimes contra a administração pública', 'Aqui as bancas trocam um verbo e a resposta muda: exigir, solicitar, apropriar-se.');
-      if (i === C.length - 1) return levelUp('Último caso', 'O chefão: a pegadinha das bancas', 'Calúnia, difamação ou injúria? Esta derruba muita gente.');
+      if (/^Nível 2/.test(C[i].lvl) && !/^Nível 2/.test(C[i - 1].lvl)) return levelUp('Nível 2 desbloqueado', 'Crimes contra a administração pública', 'Aqui as bancas trocam um verbo e a resposta muda: exigir, solicitar, apropriar-se.');
+      if (/^Chefão/.test(C[i].lvl)) return levelUp(i === C.length - 1 ? 'Último caso' : 'Caso chefão', 'O chefão: a pegadinha das bancas', 'Calúnia, difamação ou injúria? Esta derruba muita gente.');
       play();
     };
   }
 
   function levelUp(t, sub, txt) {
     var ok = res.filter(function (r) { return r.ok; }).length;
-    st.innerHTML = '<div class="screen center" style="padding-top:20px"><div class="badge-big" style="width:110px;height:110px;font-size:46px">' + (i === C.length - 1 ? '👑' : '🏛️') + '</div>' +
+    st.innerHTML = '<div class="screen center" style="padding-top:20px"><div class="badge-big" style="width:110px;height:110px;font-size:46px">' + (/^Chefão/.test(C[i].lvl) ? '👑' : '🏛️') + '</div>' +
       '<span class="kicker" style="display:block;margin-top:20px">' + t + '</span><h2 style="font-size:32px;margin-top:6px">' + sub + '</h2>' +
       '<p style="color:#C3CBDD;margin-top:10px">' + txt + '</p>' +
       '<div class="stats"><div><b>' + ok + '/' + i + '</b><span>acertos</span></div><div><b style="font-size:24px">' + X.brl(X.total) + '</b><span>bônus juntado</span></div><div><b>' + best + '</b><span>melhor sequência</span></div></div>' +
       '<button class="btn gold block" id="nx" style="margin-top:22px">Continuar</button></div>';
-    X.play('level'); X.buzz([20, 30, 20]); EV(i === C.length - 1 ? 'boss' : 'lvl2');
+    X.play('level'); X.buzz([20, 30, 20]); EV(/^Chefão/.test(C[i].lvl) ? 'boss' : 'lvl2');
     document.getElementById('nx').onclick = function () { X.play('tap'); play(); };
   }
 
@@ -199,7 +209,7 @@ footer{color:#5E6B88}
     window.scrollTo(0, 0);
   }
 
-  intro();
+  play();
 })();
 </script>
 </body>
