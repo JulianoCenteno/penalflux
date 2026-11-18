@@ -165,6 +165,8 @@ function parse(payload: unknown) {
     titles: t,
     products,
     amount: Number.isFinite(amount) ? amount : null,
+    // origem do checkout (?src= no link): usada no teste A/B quiz x página de vendas
+    src: (() => { const v = pick(payload, ["tracking.src", "data.tracking.src", "order.tracking.src", "src"]); return v ? String(v).slice(0, 60) : null; })(),
   };
 }
 
@@ -194,6 +196,7 @@ async function webhook(req: Request, url: URL) {
       const products = [...new Set([...(prev?.products || []), ...o.products])].sort();
       const { error } = await db.from("pf_orders").upsert({
         id, email: o.email, name: o.name, status, products, amount: o.amount, updated_at: new Date().toISOString(),
+        ...(o.src ? { src: o.src } : {}),
       });
       if (error) throw new Error(error.message);
       const acc = await access(o.email);
@@ -323,7 +326,7 @@ async function logout(req: Request) {
 }
 
 // ---------- Funil dos quizzes ----------
-const QUIZZES = ["desafio", "diagnostico"];
+const QUIZZES = ["desafio", "diagnostico", "ab", "vendas"];
 const UTM_KEYS = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 async function quizEvent(req: Request) {
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "?";
@@ -390,6 +393,13 @@ async function admin(req: Request, url: URL, route: string) {
     const { data, error } = await db.rpc("pf_quiz_funnel", { p_quiz: quiz, p_from: from, p_to: to });
     if (error) throw new Error(error.message);
     return json(data);
+  }
+  if (route === "/admin/ab") {
+    const from = url.searchParams.get("from") || new Date(Date.now() - 7 * 864e5).toISOString();
+    const to = url.searchParams.get("to") || new Date(Date.now() + 6e4).toISOString();
+    const { data, error } = await db.rpc("pf_ab_report", { p_from: from, p_to: to });
+    if (error) throw new Error(error.message);
+    return json({ variants: data });
   }
   if (route === "/admin/webhooks") {
     const { data } = await db.from("pf_events").select("created_at, email, status, result").order("created_at", { ascending: false }).limit(40);

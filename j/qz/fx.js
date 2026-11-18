@@ -81,8 +81,12 @@
   // funil do quiz: cada etapa vai para /api/qe (painel do admin). Uma visita = um sid.
   var Q = { quiz: '', sid: '', utm: {} };
   (function () {
-    var a = new Uint8Array(10); (window.crypto || window.msCrypto).getRandomValues(a);
-    Q.sid = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(36)).slice(-2); }).join('').replace(/[^a-z0-9]/g, '').slice(0, 20) || String(Date.now());
+    try { Q.sid = sessionStorage.getItem('pf_sid') || ''; } catch (e) {}
+    if (!/^[a-z0-9]{8,40}$/.test(Q.sid)) {
+      var a = new Uint8Array(10); (window.crypto || window.msCrypto).getRandomValues(a);
+      Q.sid = Array.prototype.map.call(a, function (x) { return ('0' + x.toString(36)).slice(-2); }).join('').replace(/[^a-z0-9]/g, '').slice(0, 20) || String(Date.now());
+      try { sessionStorage.setItem('pf_sid', Q.sid); } catch (e) {}
+    }
     var p = new URLSearchParams(location.search), keep = {};
     ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (p.get(k)) keep[k] = p.get(k); });
     try { if (Object.keys(keep).length) sessionStorage.setItem('pf_utm', JSON.stringify(keep)); Q.utm = JSON.parse(sessionStorage.getItem('pf_utm') || '{}'); } catch (e) { Q.utm = keep; }

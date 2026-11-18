@@ -3,6 +3,29 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>
+/* Teste A/B: metade de quem entra em /j/ fica no quiz, metade vai para a página de vendas.
+   O sorteio fica guardado no aparelho. Para encerrar o teste, troque AB_ON para false. */
+(function () {
+  var AB_ON = true;
+  try {
+    if (!AB_ON || !/^\/j\/?$/.test(location.pathname)) return;
+    var p = new URLSearchParams(location.search), f = p.get('ab');
+    var v = (f === 'quiz' || f === 'vendas') ? f : localStorage.getItem('pf_ab');
+    if (v !== 'quiz' && v !== 'vendas') v = Math.random() < 0.5 ? 'quiz' : 'vendas';
+    localStorage.setItem('pf_ab', v);
+    var sid = sessionStorage.getItem('pf_sid');
+    if (!/^[a-z0-9]{8,40}$/.test(sid || '')) { sid = Math.random().toString(36).slice(2, 12) + Date.now().toString(36); sessionStorage.setItem('pf_sid', sid); }
+    if (!sessionStorage.getItem('pf_ab_log')) {
+      sessionStorage.setItem('pf_ab_log', '1');
+      var utm = {}; ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term'].forEach(function (k) { if (p.get(k)) utm[k] = p.get(k); });
+      var body = JSON.stringify({ sid: sid, quiz: 'ab', step: v, path: location.pathname, utm: utm });
+      if (!(navigator.sendBeacon && navigator.sendBeacon('/api/qe', new Blob([body], { type: 'text/plain' })))) fetch('/api/qe', { method: 'POST', body: body, keepalive: true });
+    }
+    if (v === 'vendas') { p.delete('ab'); p.delete('caso'); var q = p.toString(); location.replace('/j/vendas/' + (q ? '?' + q : '')); }
+  } catch (e) {}
+})();
+</script>
 <title>Desafio do Verbo-Chave · PenalFlux</title>
 <meta name="description" content="10 casos reais de Direito Penal. Descubra o crime pelo verbo, junte bônus e veja sua patente.">
 <meta name="robots" content="noindex">
@@ -59,8 +82,8 @@ footer{color:#5E6B88}
 <footer>PenalFlux é um material de estudo e não substitui orientação jurídica. Este site não é afiliado ao Facebook.</footer>
 <div class="scrim" id="scrim" role="dialog" aria-modal="true"><div class="modal" id="modal"></div></div>
 <script src="/j/qz/depoimentos.js?v=1"></script>
-<script src="/j/qz/fx.js?v=2"></script>
-<script src="/j/qz/oferta.js?v=6"></script>
+<script src="/j/qz/fx.js?v=3"></script>
+<script src="/j/qz/oferta.js?v=7"></script>
 <script>
 (function () {
   'use strict';
