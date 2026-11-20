@@ -9,11 +9,6 @@
   ],
   "redirects": [
     {
-      "source": "/j/",
-      "destination": "/j/vendas/",
-      "permanent": false
-    },
-    {
       "source": "/app/bumps/:file*",
       "destination": "/app/#conteudos",
       "permanent": false
