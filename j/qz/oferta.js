@@ -1,6 +1,6 @@
 /* PenalFlux · final dos quizzes (/j/quiz/ e /j/desafio/)
    Revela o bônus juntado no quiz (sempre R$ 11,00), aplica no Completo (R$ 29,90 → R$ 18,90, oferta 602A3D09),
-   cuida do código de afiliado, UTMs, InitiateCheckout e da confirmação de quem prefere o Básico. */
+   cuida do código de afiliado, UTMs, clique no checkout (o InitiateCheckout fica só com o checkout da Digital Hub, que usa o mesmo pixel) e da confirmação de quem prefere o Básico. */
 (function () {
   'use strict';
   var CK = { basico: 'DF3BEC2E', completo: '423A541B', bonus: '602A3D09' };
@@ -116,12 +116,12 @@
     addEventListener('scroll', onScroll, { passive: true });
     bar.querySelector('a').onclick = function (e) { e.preventDefault(); fx('tap'); deal.scrollIntoView({ behavior: 'smooth', block: 'start' }); };
 
-    el.querySelector('a[data-ck="completo"]').addEventListener('click', function () { ev('click_completo'); fx('select'); px('InitiateCheckout', { currency: 'BRL', value: 29.9, content_name: 'PenalFlux Completo' }); });
+    el.querySelector('a[data-ck="completo"]').addEventListener('click', function () { ev('click_completo'); fx('select'); pxc('CliqueCheckout', { currency: 'BRL', value: 29.9, content_name: 'PenalFlux Completo' }); });
 
     // Básico: lembra que o bônus só vale no Completo
     var bas = el.querySelector('a[data-ck="basico"]');
     bas.addEventListener('click', function (e) {
-      if (sessionStorage.getItem('pf_up_seen')) { ev('click_basico_direto'); px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); return; }
+      if (sessionStorage.getItem('pf_up_seen')) { ev('click_basico_direto'); pxc('CliqueCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); return; }
       ev('click_basico');
       e.preventDefault(); fx('tap'); try { sessionStorage.setItem('pf_up_seen', '1'); } catch (_) {}
       var m = document.getElementById('modal');
@@ -132,8 +132,8 @@
         '<a class="btn go block" id="upyes" href="' + link(CK.bonus, s.afi) + '">Usar meu bônus: Completo por ' + brl(29.9 - B) + '</a><button class="no" id="upno">Não, quero só o Básico por R$ 10,90</button></div>';
       fx('level');
       document.getElementById('scrim').classList.add('show');
-      document.getElementById('upyes').onclick = function () { ev('popup_yes'); px('InitiateCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); };
-      document.getElementById('upno').onclick = function () { ev('popup_no'); px('InitiateCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); location.href = dec(bas.href); };
+      document.getElementById('upyes').onclick = function () { ev('popup_yes'); pxc('CliqueCheckout', { currency: 'BRL', value: 29.9 - B, content_name: 'PenalFlux Completo (bônus do quiz)' }); };
+      document.getElementById('upno').onclick = function () { ev('popup_no'); pxc('CliqueCheckout', { currency: 'BRL', value: 10.9, content_name: 'PenalFlux Básico' }); location.href = dec(bas.href); };
     }, true);
     // celular animado
     var imgs = el.querySelectorAll('.phone .scr img');

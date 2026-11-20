@@ -407,7 +407,7 @@ const seg=location.pathname.split('/').filter(Boolean)[0];if(seg&&SLUGS[seg]&&!P
 if(P.get('afi')||P.get('afib')){s={afi:P.get('afi')||s.afi||'',afib:P.get('afib')||'',t:Date.now()};try{localStorage.setItem(K,JSON.stringify(s))}catch(e){}}
 if(s.t&&Date.now()-s.t>30*864e5)s={};
 P.delete('afi');P.delete('afib');const rest=P.toString();
-document.querySelectorAll('a[data-ck]').forEach(a=>{a.addEventListener('click',()=>{try{fbq('track','InitiateCheckout',{currency:'BRL',value:a.dataset.ck==='basico'?10.9:29.9,content_name:a.dataset.ck==='basico'?'PenalFlux Básico':'PenalFlux Completo'})}catch(e){}});const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
+document.querySelectorAll('a[data-ck]').forEach(a=>{a.addEventListener('click',()=>{try{fbq('trackCustom','CliqueCheckout',{currency:'BRL',value:a.dataset.ck==='basico'?10.9:29.9,content_name:a.dataset.ck==='basico'?'PenalFlux Básico':'PenalFlux Completo'})}catch(e){}});const u=new URL(a.href);const code=a.dataset.ck==='basico'?s.afib:s.afi;if(code)u.searchParams.set('afi',code);if(rest)new URLSearchParams(rest).forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();});})();
 /* funil da página de vendas (painel): cada etapa leva o ID do Tracker (rv_), que liga a visita à venda */
 (()=>{let sid='';try{sid=sessionStorage.getItem('pf_sid')||''}catch(e){}
 if(!/^[a-z0-9]{8,40}$/.test(sid)){sid=Math.random().toString(36).slice(2,12)+Date.now().toString(36);try{sessionStorage.setItem('pf_sid',sid)}catch(e){}}
@@ -429,7 +429,7 @@ bas.addEventListener('click',e=>{if(sessionStorage.getItem('pf_up_seen'))return;
  let s={};try{s=JSON.parse(localStorage.getItem('pf_aff')||'{}')}catch(_){}if(s.afi)u.searchParams.set('afi',s.afi);
  const m=document.getElementById('modal');m.innerHTML=`<div class="up"><span class="tag">Oferta só agora</span><h3>Espera! Leve o Completo por quase o preço do Básico</h3><p>Por só R$ 8 a mais você leva tudo que faz acertar na prova.</p><ul>${items.map(t=>`<li>${ok}<span>${t}</span></li>`).join('')}</ul><div class="px"><s>De R$ 29,90</s><b>R$ 18,90</b><small>pagamento único</small></div><a class="btn go block" id="upyes" href="${u}">Quero o Completo por R$ 18,90</a><button class="no" id="upno">Não, quero só o Básico por R$ 10,90</button></div>`;
  document.getElementById('scrim').classList.add('show');
- document.getElementById('upyes').onclick=()=>{try{fbq('track','InitiateCheckout',{currency:'BRL',value:18.9,content_name:'PenalFlux Completo (desconto)'})}catch(_){}};
+ document.getElementById('upyes').onclick=()=>{try{fbq('trackCustom','CliqueCheckout',{currency:'BRL',value:18.9,content_name:'PenalFlux Completo (desconto)'})}catch(_){}};
  document.getElementById('upno').onclick=()=>{location.href=bas.href;};
 },true);})();
 /* barra fixa no celular */
