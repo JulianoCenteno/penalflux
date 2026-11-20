@@ -7,7 +7,7 @@
 /* Teste A/B: metade de quem entra em /j/ fica no quiz, metade vai para a página de vendas.
    O sorteio fica guardado no aparelho. Para encerrar o teste, troque AB_ON para false. */
 (function () {
-  var AB_ON = true;
+  var AB_ON = false; // teste encerrado em 20/11: /j/ agora redireciona para /j/vendas/ (vercel.json); o quiz segue em /j/desafio/
   try {
     if (!AB_ON || !/^\/j\/?$/.test(location.pathname)) return;
     var p = new URLSearchParams(location.search), f = p.get('ab');
